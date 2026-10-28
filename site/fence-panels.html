@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fence panel calculator — HomeFixMath</title>
+  <meta name="description" content="Calculate how many fence panels and posts to buy for a straight run. Free US DIY planner from HomeFixMath.">
+  <meta name="theme-color" content="#f3eee4">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">HomeFix<span>Math</span></a>
+      <nav class="site-nav" aria-label="Calculators">
+        <a href="fence-panels.html" aria-current="page">Fence</a>
+        <a href="paint.html">Paint</a>
+        <a href="deck-boards.html">Deck</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap page" tabindex="-1">
+    <p class="crumb"><a href="index.html">Home</a> <span aria-hidden="true">/</span> Fence panels</p>
+    <h1 id="page-title">Fence panel calculator</h1>
+    <p class="lede">Count prefab panels and posts for a straight run. Built for common 6 ft and 8 ft US panels.</p>
+    <noscript><p class="warn">Turn on JavaScript to calculate. Nothing you enter is uploaded.</p></noscript>
+
+    <div class="calc-layout">
+      <form class="panel" id="calc" autocomplete="off">
+        <h2>Measurements</h2>
+        <div class="field">
+          <label for="length">Fence length (ft)</label>
+          <input id="length" name="length" type="number" inputmode="decimal" min="0" max="2000" step="0.01" value="48" required aria-describedby="length-hint">
+          <p class="hint" id="length-hint">Decimals are fine: 8 ft 6 in = 8.5.</p>
+        </div>
+        <div class="field">
+          <label for="panel">Panel width</label>
+          <select id="panel" name="panel">
+            <option value="6" selected>6 ft (common prefab)</option>
+            <option value="8">8 ft (common prefab)</option>
+          </select>
+        </div>
+        <label class="check">
+          <input id="gate" name="gate" type="checkbox">
+          <span>This run includes one gate <span class="hint">Replaces one panel of the same width.</span></span>
+        </label>
+        <div class="form-actions">
+          <p class="hint">Updates as you type.</p>
+          <button class="btn btn-primary" type="submit">Calculate</button>
+        </div>
+      </form>
+
+      <section class="panel result-panel" id="result" aria-live="polite">
+        <h2>Shopping list</h2>
+        <div id="result-body">
+          <p class="result-empty">Enter your measurements to build a shopping list.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="notes" aria-labelledby="assumptions">
+      <h2 id="assumptions">How we count</h2>
+      <ul>
+        <li>Counts are for one straight run. If the fence turns a corner, add a post at the corner or calculate each side separately.</li>
+        <li>A bay is one panel width. Posts sit at both ends and between bays, so you need one more post than the number of bays.</li>
+        <li>A checked gate treats one bay as a gate instead of a panel. The gate is assumed to match the panel width.</li>
+        <li>If the length does not divide evenly, the count rounds up to a full panel and the list says how much extra that is.</li>
+        <li>Concrete is an allowance of two 50-lb bags per post, roughly an 8-inch hole about 2 feet deep. It is not a frost-depth specification. See the <a href="disclaimer.html#estimates">estimate disclaimer</a>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="footer-brand" href="index.html">HomeFixMath</a>
+        <p>Free planning math for US DIY projects. Estimates only — confirm quantities with your supplier before you buy.</p>
+      </div>
+      <nav class="footer-links" aria-label="More">
+        <a href="fence-panels.html">Fence panels</a>
+        <a href="paint.html">Paint</a>
+        <a href="deck-boards.html">Deck boards</a>
+        <a href="disclaimer.html#estimates">Estimate disclaimer</a>
+        <a href="disclaimer.html#affiliates">Affiliate disclosure</a>
+      </nav>
+    </div>
+    <p class="legal">© 2026 HomeFixMath</p>
+  </footer>
+
+  <script src="formulas.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var form = document.getElementById("calc");
+      var body = document.getElementById("result-body");
+      var fmt = HomeFixMath.formatNum;
+
+      function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text != null) node.textContent = text;
+        return node;
+      }
+
+      function clear(node) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+      }
+
+      function shopItem(qty, label) {
+        var li = el("li");
+        li.appendChild(el("span", "qty", String(qty)));
+        li.appendChild(el("span", null, label));
+        return li;
+      }
+
+      function render(result) {
+        clear(body);
+        if (!result.ok) {
+          body.appendChild(el("p", "warn", result.message));
+          return;
+        }
+
+        body.appendChild(el("p", "result-kicker", "Straight run of " + fmt(result.lengthFt) + " ft"));
+        var list = el("ul", "shop");
+        if (result.panels > 0) {
+          list.appendChild(shopItem(result.panels, fmt(result.panelFt) + " ft fence panels"));
+        }
+        if (result.gates > 0) {
+          list.appendChild(shopItem(result.gates, fmt(result.panelFt) + " ft gate"));
+        }
+        list.appendChild(shopItem(result.posts, "4×4 posts"));
+        body.appendChild(list);
+
+        var note = result.posts + " posts for " + result.bays + " " + (result.bays === 1 ? "bay" : "bays");
+        if (result.gates) {
+          note += " (" + result.panels + " panels and 1 gate)";
+        }
+        note += ". A straight run needs one more post than the number of bays.";
+        if (result.overrunFt > 0.05) {
+          note += " Full panels cover " + fmt(result.coveredFt) + " ft, which is " + fmt(result.overrunFt) + " ft past your measurement. Cut the last panel or shorten the layout.";
+        } else {
+          note += " This length divides evenly into " + fmt(result.panelFt) + " ft panels.";
+        }
+        body.appendChild(el("p", "explain", note));
+        body.appendChild(el("h3", null, "Concrete allowance"));
+        body.appendChild(el("p", "explain", "About " + result.concreteBags + " × 50-lb bags (2 per post) for a typical 8-inch hole, 2 feet deep. Colder climates often need deeper holes — check local frost depth before you buy."));
+      }
+
+      function update() {
+        render(HomeFixMath.fence({
+          lengthFt: document.getElementById("length").value,
+          panelFt: document.getElementById("panel").value,
+          hasGate: document.getElementById("gate").checked
+        }));
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        update();
+      });
+      form.addEventListener("input", update);
+      form.addEventListener("change", update);
+      update();
+    })();
+  </script>
+</body>
+</html>

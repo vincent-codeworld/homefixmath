@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interior Paint Calculator — Gallons for Walls &amp; Ceiling (Free) | HomeFixMath</title>
+  <meta name="description" content="Free DIY interior paint calculator. Enter room size, coats, and openings — get gallons to buy and a printable shopping list. US feet. Estimates only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="../index.html">HomeFixMath</a>
+        <a href="fence-panels.html">Fence</a>
+        <a href="paint.html">Paint</a>
+        <a href="deck-boards.html">Deck</a>
+        <a href="../about.html">About</a>
+        <a href="../affiliate-disclosure.html">Disclosure</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <h1>Interior Paint Calculator</h1>
+    <p class="lead">Estimate gallons for walls (and optional ceiling) after doors and windows. Units: feet. Print or copy a shopping list before you buy.</p>
+
+    <div class="card no-print">
+      <div class="grid">
+        <div>
+          <label for="lengthFt">Room length (ft)</label>
+          <input id="lengthFt" type="number" min="0.1" max="200" step="0.1" value="12" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="widthFt">Room width (ft)</label>
+          <input id="widthFt" type="number" min="0.1" max="200" step="0.1" value="12" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="heightFt">Ceiling height (ft)</label>
+          <input id="heightFt" type="number" min="0.1" max="30" step="0.1" value="8" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="doors">Doors</label>
+          <input id="doors" type="number" min="0" max="20" step="1" value="2" inputmode="numeric" />
+        </div>
+        <div>
+          <label for="windows">Windows</label>
+          <input id="windows" type="number" min="0" max="40" step="1" value="2" inputmode="numeric" />
+        </div>
+        <div>
+          <label for="doorArea">Avg door area (ft²)</label>
+          <input id="doorArea" type="number" min="1" max="80" step="0.5" value="21" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="winArea">Avg window area (ft²)</label>
+          <input id="winArea" type="number" min="1" max="80" step="0.5" value="15" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="coats">Coats</label>
+          <input id="coats" type="number" min="1" max="6" step="1" value="2" inputmode="numeric" />
+        </div>
+        <div>
+          <label for="wastePct">Waste / touch-up (%)</label>
+          <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" />
+        </div>
+        <div>
+          <label for="coverage">Coverage per gallon (ft²)</label>
+          <input id="coverage" type="number" min="50" max="600" step="1" value="350" inputmode="numeric" />
+        </div>
+        <div class="row-check">
+          <input id="includeCeiling" type="checkbox" />
+          <label for="includeCeiling" style="margin:0;font-weight:500">Also paint the ceiling</label>
+        </div>
+      </div>
+      <p class="error" id="error" role="alert" aria-live="polite"></p>
+      <div class="results" id="results" aria-live="polite">
+        <div class="stat"><div class="n" id="outGallons">—</div><div class="l">Gallons to buy</div></div>
+        <div class="stat"><div class="n" id="outWalls">—</div><div class="l">Wall ft²</div></div>
+        <div class="stat"><div class="n" id="outCeil">—</div><div class="l">Ceiling ft²</div></div>
+      </div>
+      <p class="note" id="detail"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="btnPrint" disabled>Print shopping list</button>
+        <button type="button" class="btn btn-secondary" id="btnCopy" disabled>Copy list</button>
+      </div>
+      <p class="note" id="copyStatus" aria-live="polite"></p>
+    </div>
+
+    <div class="card print-block" id="shoppingCard">
+      <h2 class="print-only">HomeFixMath — Paint shopping list</h2>
+      <h2 class="no-print">Shopping list</h2>
+      <p class="note" id="shopMeta">Enter valid measurements above to build your list.</p>
+      <ul class="shop-list" id="shopList">
+        <li>Interior paint (match sheen &amp; color)</li>
+        <li>Primer (if new drywall or big color change)</li>
+        <li>Rollers, trays, brushes, painter’s tape</li>
+        <li>Drop cloths / plastic</li>
+      </ul>
+      <p class="note">Retailer buy links will appear here after affiliate networks are approved (Impact / CJ / Awin). See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+      <p class="disclaimer">Estimates only. Match coverage to the can label; primer is separate. Not a substitute for product instructions.</p>
+    </div>
+
+    <div class="no-print">
+      <h2>How we calculate</h2>
+      <div class="card note">
+        <ol>
+          <li>Wall area = 2 × (length + width) × height − (doors × door area) − (windows × window area).</li>
+          <li>Ceiling area = length × width when enabled; else 0.</li>
+          <li>Painted ft² = (walls + ceiling) × coats × (1 + waste%).</li>
+          <li>Gallons to buy = ceil(painted ft² ÷ coverage). Default coverage 350 ft²/gal — change to match your can.</li>
+        </ol>
+        <p><strong>Example:</strong> 12×12×8 ft room, 2 doors @ 21 ft², 2 windows @ 15 ft², 2 coats, 10% waste, no ceiling → walls ≈ 312 ft² → ~2 gallons at 350 ft²/gal.</p>
+      </div>
+
+      <h2>FAQ</h2>
+      <div class="card">
+        <p><strong>How much paint for a 12×12 room?</strong> With 8 ft ceilings, two doors and two windows, two coats usually needs about 2 gallons (see example).</p>
+        <p><strong>Do I need primer?</strong> Yes on new drywall, stains, or large color changes. Buy primer separately from finish paint.</p>
+        <p><strong>What about trim?</strong> Baseboards and door casings usually need a quart or two of trim enamel, not wall gallons.</p>
+        <p><strong>Why round up gallons?</strong> Partial cans still leave you short on the last wall. Touch-up leftover is useful.</p>
+      </div>
+
+      <p class="disclaimer">Estimates only. Confirm with product labels, your surface, and local practice.</p>
+    </div>
+  </main>
+  <footer class="no-print">
+    <div class="wrap">
+      <a href="../index.html">Home</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>
+      <a href="../about.html">About</a>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const ids = ["lengthFt","widthFt","heightFt","doors","windows","doorArea","winArea","coats","wastePct","coverage","includeCeiling"];
+
+      function num(id) { return parseFloat($(id).value); }
+      function int(id) {
+        const v = $(id).value;
+        if (v === "" || v === null) return NaN;
+        return parseInt(v, 10);
+      }
+
+      function setOut(g, w, c, detail) {
+        $("outGallons").textContent = g;
+        $("outWalls").textContent = w;
+        $("outCeil").textContent = c;
+        $("detail").textContent = detail || "";
+      }
+
+      function setButtons(on) {
+        $("btnPrint").disabled = !on;
+        $("btnCopy").disabled = !on;
+      }
+
+      function buildListText(gallons, walls, ceil, coats, cov, L, W, H) {
+        const lines = [
+          "HomeFixMath — Paint shopping list",
+          "Room: " + L + " × " + W + " × " + H + " ft · " + coats + " coat(s) · coverage " + cov + " ft²/gal",
+          "Wall area: " + walls.toFixed(0) + " ft²" + (ceil > 0 ? (" · ceiling: " + ceil.toFixed(0) + " ft²") : ""),
+          "",
+          gallons + " × gallon(s) interior paint (match sheen & color)",
+          "Primer (if new drywall or big color change)",
+          "Roller covers, tray, brushes, painter’s tape",
+          "Drop cloths / plastic",
+          "Optional: quart of trim enamel for baseboards",
+          "",
+          "Estimates only — confirm coverage on the can label."
+        ];
+        return lines.join("\n");
+      }
+
+      function renderShop(ok, gallons, walls, ceil, coats, cov, L, W, H) {
+        const meta = $("shopMeta");
+        const list = $("shopList");
+        if (!ok) {
+          meta.textContent = "Enter valid measurements above to build your list.";
+          list.innerHTML = [
+            "<li>Interior paint (match sheen &amp; color)</li>",
+            "<li>Primer (if new drywall or big color change)</li>",
+            "<li>Rollers, trays, brushes, painter’s tape</li>",
+            "<li>Drop cloths / plastic</li>"
+          ].join("");
+          return "";
+        }
+        meta.textContent = L + "×" + W + "×" + H + " ft · " + coats + " coat(s) · " + walls.toFixed(0) + " ft² walls" + (ceil > 0 ? (" + " + ceil.toFixed(0) + " ft² ceiling") : "") + ".";
+        const items = [
+          gallons + " × gallon(s) interior paint (match sheen &amp; color)",
+          "Primer (if new drywall or big color change)",
+          "Roller covers, tray, brushes, painter’s tape",
+          "Drop cloths / plastic",
+          "Optional: quart of trim enamel for baseboards"
+        ];
+        list.innerHTML = items.map((t) => "<li>" + t + "</li>").join("");
+        return buildListText(gallons, walls, ceil, coats, cov, L, W, H);
+      }
+
+      let lastListText = "";
+
+      function calc() {
+        const err = $("error");
+        err.textContent = "";
+        $("copyStatus").textContent = "";
+        const L = num("lengthFt");
+        const W = num("widthFt");
+        const H = num("heightFt");
+        const doors = int("doors");
+        const windows = int("windows");
+        const doorA = num("doorArea");
+        const winA = num("winArea");
+        const coats = int("coats");
+        const waste = num("wastePct");
+        const cov = num("coverage");
+        const ceilOn = $("includeCeiling").checked;
+
+        function fail(msg) {
+          err.textContent = msg;
+          setOut("—","—","—","");
+          setButtons(false);
+          lastListText = "";
+          renderShop(false);
+        }
+
+        if (![L,W,H].every((v) => Number.isFinite(v) && v > 0)) {
+          fail("Enter room length, width, and height greater than 0 ft.");
+          return;
+        }
+        if (L > 200 || W > 200 || H > 30) {
+          fail("Room dimensions are outside the range this tool supports.");
+          return;
+        }
+        if (![doors, windows, coats].every((v) => Number.isFinite(v) && v >= 0 && Math.floor(v) === v)) {
+          fail("Doors, windows, and coats must be whole numbers ≥ 0 (coats ≥ 1).");
+          return;
+        }
+        if (coats < 1 || coats > 6) {
+          fail("Coats must be between 1 and 6.");
+          return;
+        }
+        if (doors > 20 || windows > 40) {
+          fail("Door/window counts are outside the supported range.");
+          return;
+        }
+        if (!Number.isFinite(doorA) || doorA <= 0 || !Number.isFinite(winA) || winA <= 0) {
+          fail("Enter positive door and window areas.");
+          return;
+        }
+        if (!Number.isFinite(waste) || waste < 0 || waste > 40) {
+          fail("Waste % must be between 0 and 40.");
+          return;
+        }
+        if (!Number.isFinite(cov) || cov < 50 || cov > 600) {
+          fail("Coverage must be between 50 and 600 ft² per gallon.");
+          return;
+        }
+
+        let walls = 2 * (L + W) * H - doors * doorA - windows * winA;
+        if (walls < 0) {
+          fail("Openings exceed wall area. Reduce door/window counts or areas.");
+          return;
+        }
+        const ceil = ceilOn ? (L * W) : 0;
+        const painted = (walls + ceil) * coats * (1 + waste / 100);
+        const gallons = Math.ceil(painted / cov);
+        let detail = "Paintable after openings: " + (walls + ceil).toFixed(0) + " ft² × " + coats + " coat(s)";
+        if (waste > 0) detail += " + " + waste + "% waste";
+        detail += " = " + painted.toFixed(0) + " ft² equivalent.";
+
+        setOut(String(gallons), String(Math.round(walls)), String(Math.round(ceil)), detail);
+        setButtons(true);
+        lastListText = renderShop(true, gallons, walls, ceil, coats, cov, L, W, H);
+      }
+
+      $("btnPrint").addEventListener("click", function () {
+        if ($("btnPrint").disabled) return;
+        window.print();
+      });
+      $("btnCopy").addEventListener("click", function () {
+        if (!lastListText) return;
+        const status = $("copyStatus");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(lastListText).then(function () {
+            status.textContent = "Shopping list copied.";
+          }).catch(function () {
+            status.textContent = "Could not copy — select the list and copy manually.";
+          });
+        } else {
+          status.textContent = "Clipboard unavailable — select the list and copy manually.";
+        }
+      });
+
+      ids.forEach((id) => {
+        $(id).addEventListener("input", calc);
+        $(id).addEventListener("change", calc);
+      });
+      calc();
+    })();
+  </script>
+</body>
+</html>

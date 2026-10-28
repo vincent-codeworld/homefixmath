@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deck Board Calculator — Boards, Rows &amp; Waste (Free) | HomeFixMath</title>
+  <meta name="description" content="Free DIY deck board calculator. Enter deck size, board width, gap, and stock length — get board count and a printable shopping list. US feet. Estimates only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="../index.html">HomeFixMath</a>
+        <a href="fence-panels.html">Fence</a>
+        <a href="paint.html">Paint</a>
+        <a href="deck-boards.html">Deck</a>
+        <a href="../about.html">About</a>
+        <a href="../affiliate-disclosure.html">Disclosure</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <h1>Deck Board Calculator</h1>
+    <p class="lead">Estimate how many stock boards to buy from deck size, board face width, gap, and waste. Units: feet and inches. Print or copy a shopping list before you buy.</p>
+
+    <div class="card no-print">
+      <div class="grid">
+        <div>
+          <label for="lengthFt">Deck length (ft)</label>
+          <input id="lengthFt" type="number" min="0.1" max="200" step="0.1" value="16" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="widthFt">Deck width (ft)</label>
+          <input id="widthFt" type="number" min="0.1" max="200" step="0.1" value="12" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="boardWidthIn">Board face width (in)</label>
+          <input id="boardWidthIn" type="number" min="1" max="12" step="0.125" value="5.5" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="gapIn">Gap between boards (in)</label>
+          <input id="gapIn" type="number" min="0" max="1" step="0.0625" value="0.125" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="stockFt">Stock board length (ft)</label>
+          <select id="stockFt">
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="12" selected>12</option>
+            <option value="16">16</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <div>
+          <label for="wastePct">Waste / cuts (%)</label>
+          <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" />
+        </div>
+        <div>
+          <label for="runAlong">Boards run parallel to</label>
+          <select id="runAlong">
+            <option value="length" selected>Deck length</option>
+            <option value="width">Deck width</option>
+          </select>
+        </div>
+      </div>
+      <p class="error" id="error" role="alert" aria-live="polite"></p>
+      <div class="results" id="results" aria-live="polite">
+        <div class="stat"><div class="n" id="outBoards">—</div><div class="l">Boards to buy</div></div>
+        <div class="stat"><div class="n" id="outRows">—</div><div class="l">Board rows</div></div>
+        <div class="stat"><div class="n" id="outLinFt">—</div><div class="l">Linear ft (w/ waste)</div></div>
+      </div>
+      <p class="note" id="detail"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="btnPrint" disabled>Print shopping list</button>
+        <button type="button" class="btn btn-secondary" id="btnCopy" disabled>Copy list</button>
+      </div>
+      <p class="note" id="copyStatus" aria-live="polite"></p>
+    </div>
+
+    <div class="card print-block" id="shoppingCard">
+      <h2 class="print-only">HomeFixMath — Deck board shopping list</h2>
+      <h2 class="no-print">Shopping list</h2>
+      <p class="note" id="shopMeta">Enter valid measurements above to build your list.</p>
+      <ul class="shop-list" id="shopList">
+        <li>Decking boards (match species, grade, and face width)</li>
+        <li>Joist hangers / fasteners rated for outdoor use</li>
+        <li>Hidden clips or deck screws</li>
+        <li>Optional: fascia boards and railing posts</li>
+      </ul>
+      <p class="note">Retailer buy links will appear here after affiliate networks are approved (Impact / CJ / Awin). See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+      <p class="disclaimer">Estimates only. Confirm actual board face width and spacing with the product. Not structural or code approval.</p>
+    </div>
+
+    <div class="no-print">
+      <h2>How we calculate</h2>
+      <div class="card note">
+        <ol>
+          <li>Effective pitch = board face width + gap (inches).</li>
+          <li>Rows = ceil( span perpendicular to boards × 12 ÷ pitch ).</li>
+          <li>Pieces per row = ceil( span along boards ÷ stock length ).</li>
+          <li>Raw boards = rows × pieces per row; buy = ceil(raw × (1 + waste%)).</li>
+          <li>Linear ft with waste = rows × along-span × (1 + waste%).</li>
+        </ol>
+        <p><strong>Example:</strong> 16×12 ft deck, boards parallel to length, 5.5 in face, 1/8 in gap, 12 ft stock, 10% waste → pitch 5.625 in → 26 rows → 2 boards/row → 52 raw → <strong>58</strong> to buy.</p>
+      </div>
+
+      <h2>FAQ</h2>
+      <div class="card">
+        <p><strong>What face width should I use?</strong> Use the actual dressed width (often 5.5 in for “6 in” lumber, or the manufacturer’s stated face for composites).</p>
+        <p><strong>How big a gap?</strong> Many wood decks use about 1/8 in; composites follow the brand’s clip or spacer guidance. Change the gap field to match.</p>
+        <p><strong>Why add waste?</strong> End cuts, bad boards, and picture-frame borders eat stock. 10% is a common planning buffer.</p>
+        <p><strong>Does this size joists or footings?</strong> No — this tool only estimates decking boards, not framing or permits.</p>
+      </div>
+
+      <p class="disclaimer">Estimates only. Confirm with product labels, local code, and your measurements. Not engineering advice.</p>
+    </div>
+  </main>
+  <footer class="no-print">
+    <div class="wrap">
+      <a href="../index.html">Home</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>
+      <a href="../about.html">About</a>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const ids = ["lengthFt","widthFt","boardWidthIn","gapIn","stockFt","wastePct","runAlong"];
+
+      function num(id) { return parseFloat($(id).value); }
+
+      function setOut(b, r, lf, detail) {
+        $("outBoards").textContent = b;
+        $("outRows").textContent = r;
+        $("outLinFt").textContent = lf;
+        $("detail").textContent = detail || "";
+      }
+
+      function setButtons(on) {
+        $("btnPrint").disabled = !on;
+        $("btnCopy").disabled = !on;
+      }
+
+      function buildListText(boards, rows, perRow, stock, L, W, face, gap, waste, along) {
+        const lines = [
+          "HomeFixMath — Deck board shopping list",
+          "Deck: " + L + " × " + W + " ft · boards parallel to " + along,
+          "Face " + face + " in · gap " + gap + " in · stock " + stock + " ft · waste " + waste + "%",
+          "Rows: " + rows + " · pieces per row: " + perRow,
+          "",
+          boards + " × decking board(s) @ " + stock + " ft (match species & face width)",
+          "Outdoor-rated deck screws or hidden clips",
+          "Optional: fascia boards, railing posts, joist tape",
+          "",
+          "Estimates only — confirm face width and spacing with the product."
+        ];
+        return lines.join("\n");
+      }
+
+      function renderShop(ok, boards, rows, perRow, stock, L, W, face, gap, waste, along) {
+        const meta = $("shopMeta");
+        const list = $("shopList");
+        if (!ok) {
+          meta.textContent = "Enter valid measurements above to build your list.";
+          list.innerHTML = [
+            "<li>Decking boards (match species, grade, and face width)</li>",
+            "<li>Joist hangers / fasteners rated for outdoor use</li>",
+            "<li>Hidden clips or deck screws</li>",
+            "<li>Optional: fascia boards and railing posts</li>"
+          ].join("");
+          return "";
+        }
+        meta.textContent = L + "×" + W + " ft · " + rows + " rows · " + boards + " boards @ " + stock + " ft.";
+        const items = [
+          boards + " × decking board(s) @ " + stock + " ft (match species &amp; face width)",
+          "Outdoor-rated deck screws or hidden clips",
+          "Optional: fascia boards, railing posts, joist tape"
+        ];
+        list.innerHTML = items.map((t) => "<li>" + t + "</li>").join("");
+        return buildListText(boards, rows, perRow, stock, L, W, face, gap, waste, along);
+      }
+
+      let lastListText = "";
+
+      function calc() {
+        const err = $("error");
+        err.textContent = "";
+        $("copyStatus").textContent = "";
+        const L = num("lengthFt");
+        const W = num("widthFt");
+        const face = num("boardWidthIn");
+        const gap = num("gapIn");
+        const stock = num("stockFt");
+        const waste = num("wastePct");
+        const along = $("runAlong").value;
+
+        function fail(msg) {
+          err.textContent = msg;
+          setOut("—","—","—","");
+          setButtons(false);
+          lastListText = "";
+          renderShop(false);
+        }
+
+        if (![L, W].every((v) => Number.isFinite(v) && v > 0)) {
+          fail("Enter deck length and width greater than 0 ft.");
+          return;
+        }
+        if (L > 200 || W > 200) {
+          fail("Deck dimensions are outside the range this tool supports.");
+          return;
+        }
+        if (!Number.isFinite(face) || face < 1 || face > 12) {
+          fail("Board face width must be between 1 and 12 in.");
+          return;
+        }
+        if (!Number.isFinite(gap) || gap < 0 || gap > 1) {
+          fail("Gap must be between 0 and 1 in.");
+          return;
+        }
+        if (!Number.isFinite(stock) || stock < 4 || stock > 24) {
+          fail("Pick a stock board length between 4 and 24 ft.");
+          return;
+        }
+        if (!Number.isFinite(waste) || waste < 0 || waste > 40) {
+          fail("Waste % must be between 0 and 40.");
+          return;
+        }
+
+        const pitch = face + gap;
+        if (pitch <= 0) {
+          fail("Board width + gap must be greater than 0.");
+          return;
+        }
+
+        const perpFt = along === "length" ? W : L;
+        const alongFt = along === "length" ? L : W;
+        const rows = Math.ceil((perpFt * 12) / pitch);
+        const perRow = Math.ceil(alongFt / stock);
+        const raw = rows * perRow;
+        const buy = Math.ceil(raw * (1 + waste / 100));
+        const linFt = Math.ceil(rows * alongFt * (1 + waste / 100));
+        const alongLabel = along === "length" ? "length" : "width";
+
+        let detail = "Pitch " + pitch.toFixed(3) + " in across " + perpFt + " ft → " + rows + " rows × " + perRow + " pc/row = " + raw + " raw";
+        if (waste > 0) detail += " + " + waste + "% waste";
+        detail += ".";
+
+        setOut(String(buy), String(rows), String(linFt), detail);
+        setButtons(true);
+        lastListText = renderShop(true, buy, rows, perRow, stock, L, W, face, gap, waste, alongLabel);
+      }
+
+      $("btnPrint").addEventListener("click", function () {
+        if ($("btnPrint").disabled) return;
+        window.print();
+      });
+      $("btnCopy").addEventListener("click", function () {
+        if (!lastListText) return;
+        const status = $("copyStatus");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(lastListText).then(function () {
+            status.textContent = "Shopping list copied.";
+          }).catch(function () {
+            status.textContent = "Could not copy — select the list and copy manually.";
+          });
+        } else {
+          status.textContent = "Clipboard unavailable — select the list and copy manually.";
+        }
+      });
+
+      ids.forEach((id) => {
+        $(id).addEventListener("input", calc);
+        $(id).addEventListener("change", calc);
+      });
+      calc();
+    })();
+  </script>
+</body>
+</html>

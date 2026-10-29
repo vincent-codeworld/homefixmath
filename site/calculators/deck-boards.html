@@ -64,7 +64,7 @@
             "name": "Why add waste?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "End cuts, bad boards, and picture-frame borders eat stock. 10% is a common planning buffer."
+              "text": "End cuts, bad boards, and picture-frame borders eat stock. 10% is a common planning buffer. This count does not reuse offcuts on the next row."
             }
           },
           {
@@ -82,9 +82,10 @@
   </script>
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
   <header>
     <div class="wrap">
-      <nav>
+      <nav aria-label="Primary">
         <a class="brand" href="../index.html">HomeFixMath</a>
         <a href="fence-panels.html">Fence</a>
         <a href="paint.html">Paint</a>
@@ -94,57 +95,110 @@
       </nav>
     </div>
   </header>
-  <main class="wrap">
+  <main id="main" class="wrap" tabindex="-1">
     <h1>Deck Board Calculator</h1>
-    <p class="lead">Estimate how many stock boards to buy from deck size, board face width, gap, and waste. Units: feet and inches. Print or copy a shopping list before you buy.</p>
+    <p class="lead">Pick a common board — face width and gap together — or type your own. The page shows the rip, the offcuts, and the waste before you buy. Units: feet and inches.</p>
 
     <div class="card no-print">
-      <div class="grid">
-        <div>
-          <label for="lengthFt">Deck length (ft)</label>
-          <input id="lengthFt" type="number" min="0.1" max="200" step="0.1" value="16" inputmode="decimal" />
+      <fieldset class="scenes">
+        <legend>Start from a scene</legend>
+        <div id="sceneRow" class="scene-row" role="group" aria-label="Scene templates"></div>
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Deck</legend>
+        <div class="grid">
+          <div>
+            <label for="lengthFt">Deck length (ft)</label>
+            <input id="lengthFt" type="number" min="0.1" max="200" step="0.1" value="16" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="widthFt">Deck width (ft)</label>
+            <input id="widthFt" type="number" min="0.1" max="200" step="0.1" value="12" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="runAlong">Boards run parallel to</label>
+            <select id="runAlong">
+              <option value="length" selected>Deck length</option>
+              <option value="width">Deck width</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label for="widthFt">Deck width (ft)</label>
-          <input id="widthFt" type="number" min="0.1" max="200" step="0.1" value="12" inputmode="decimal" />
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Boards</legend>
+        <div class="grid">
+          <div>
+            <label for="boardPreset">Board preset</label>
+            <select id="boardPreset">
+              <option value="pt-5-4x6" selected>5/4×6 pressure-treated (5.5 in face, 1/8 in gap)</option>
+              <option value="cedar-5-4x6">5/4×6 cedar (5.5 in face, 1/8 in gap)</option>
+              <option value="composite-clip">Composite board (5.5 in face, 3/16 in clip gap)</option>
+              <option value="two-by-six">2×6 decking (5.5 in dressed face, 1/8 in gap)</option>
+              <option value="custom">Custom face and gap</option>
+            </select>
+          </div>
+          <div>
+            <label for="boardWidthIn">Board face width (in)</label>
+            <input id="boardWidthIn" type="number" min="1" max="12" step="0.125" value="5.5" inputmode="decimal" aria-describedby="faceHint" />
+            <p class="hint" id="faceHint">Use the dressed face. A board sold as 6 in is often 5.5 in.</p>
+          </div>
+          <div>
+            <label for="gapIn">Gap between boards (in)</label>
+            <input id="gapIn" type="number" min="0" max="1" step="0.0625" value="0.125" inputmode="decimal" aria-describedby="gapHint" />
+            <p class="hint" id="gapHint">About 1/8 in is common for wood. Composite clips often set their own gap — match the clip.</p>
+          </div>
+          <div>
+            <label for="stockFt">Stock board length (ft)</label>
+            <select id="stockFt">
+              <option value="8">8</option>
+              <option value="10">10</option>
+              <option value="12" selected>12</option>
+              <option value="16">16</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div>
+            <label for="wastePct">Waste / cuts (%)</label>
+            <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" aria-describedby="wasteHint" />
+            <p class="hint" id="wasteHint">Extra for end cuts, a bad board, and a border you might add. Offcuts are not reused in this count.</p>
+          </div>
         </div>
-        <div>
-          <label for="boardWidthIn">Board face width (in)</label>
-          <input id="boardWidthIn" type="number" min="1" max="12" step="0.125" value="5.5" inputmode="decimal" />
+        <div class="checks">
+          <div class="row-check">
+            <input id="includeFascia" type="checkbox" />
+            <label for="includeFascia">Add fascia boards for the perimeter</label>
+          </div>
+          <div class="row-check">
+            <input id="includeFinish" type="checkbox" />
+            <label for="includeFinish">Add deck finish to the list</label>
+          </div>
         </div>
-        <div>
-          <label for="gapIn">Gap between boards (in)</label>
-          <input id="gapIn" type="number" min="0" max="1" step="0.0625" value="0.125" inputmode="decimal" />
+        <div id="finishFields" hidden>
+          <div class="subgrid">
+            <div>
+              <label for="finishPreset">Finish preset</label>
+              <select id="finishPreset">
+                <option value="stain-250" selected>Typical deck stain (about 250 ft²/gal)</option>
+                <option value="stain-150">Thirsty wood (about 150 ft²/gal)</option>
+                <option value="custom">Custom finish coverage</option>
+              </select>
+            </div>
+            <div>
+              <label for="finishCoverage">Finish coverage (ft²/gal)</label>
+              <input id="finishCoverage" type="number" min="50" max="600" step="1" value="250" inputmode="numeric" />
+            </div>
+            <div>
+              <label for="finishCoats">Finish coats</label>
+              <input id="finishCoats" type="number" min="1" max="3" step="1" value="2" inputmode="numeric" />
+            </div>
+          </div>
+          <p class="hint">Finish uses the deck area, not the board count. Composite often skips stain — leave this off if the product says so.</p>
         </div>
-        <div>
-          <label for="stockFt">Stock board length (ft)</label>
-          <select id="stockFt">
-            <option value="8">8</option>
-            <option value="10">10</option>
-            <option value="12" selected>12</option>
-            <option value="16">16</option>
-            <option value="20">20</option>
-          </select>
-        </div>
-        <div>
-          <label for="wastePct">Waste / cuts (%)</label>
-          <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" />
-        </div>
-        <div>
-          <label for="runAlong">Boards run parallel to</label>
-          <select id="runAlong">
-            <option value="length" selected>Deck length</option>
-            <option value="width">Deck width</option>
-          </select>
-        </div>
-      </div>
+      </fieldset>
+
       <p class="error" id="error" role="alert" aria-live="polite"></p>
-      <div class="results" id="results" aria-live="polite">
-        <div class="stat"><div class="n" id="outBoards">—</div><div class="l">Boards to buy</div></div>
-        <div class="stat"><div class="n" id="outRows">—</div><div class="l">Board rows</div></div>
-        <div class="stat"><div class="n" id="outLinFt">—</div><div class="l">Linear ft (w/ waste)</div></div>
-      </div>
-      <p class="note" id="detail"></p>
       <div class="actions">
         <button type="button" class="btn" id="btnPrint" disabled>Print shopping list</button>
         <button type="button" class="btn btn-secondary" id="btnCopy" disabled>Copy list</button>
@@ -152,41 +206,48 @@
       <p class="note" id="copyStatus" aria-live="polite"></p>
     </div>
 
+    <div class="card" id="resultCard">
+      <h2 class="result-title">The count</h2>
+      <div class="results" aria-live="polite">
+        <div class="stat"><div class="n" id="outBoards">—</div><div class="l">Boards to buy</div></div>
+        <div class="stat"><div class="n" id="outRows">—</div><div class="l">Board rows</div></div>
+        <div class="stat"><div class="n" id="outLinFt">—</div><div class="l">Stock ft to buy</div></div>
+      </div>
+      <p class="callout" id="callout"></p>
+      <h3 class="why-title" id="whyTitle">Why these numbers</h3>
+      <div id="why" aria-labelledby="whyTitle"></div>
+      <details class="how" id="howCalc">
+        <summary>How this was calculated</summary>
+        <div class="how-run" id="howRun">
+          <p>Rows use the dressed face plus the gap as a pitch, then round up. Pieces per row are the run length divided by the stock length, rounded up, without reusing offcuts. Waste is a percent of that raw count, rounded up to whole boards. Example: a 16×12 ft deck, boards parallel to the length, 5.5 in face, 1/8 in gap, 12 ft stock, and 10% waste is 26 rows and 58 boards to buy. This does not size joists or footings.</p>
+        </div>
+      </details>
+    </div>
+
     <div class="card print-block" id="shoppingCard">
       <h2 class="print-only">HomeFixMath — Deck board shopping list</h2>
       <h2 class="no-print">Shopping list</h2>
       <p class="note" id="shopMeta">Enter valid measurements above to build your list.</p>
-      <ul class="shop-list" id="shopList">
-        <li>Decking boards (match species, grade, and face width)</li>
-        <li>Joist hangers / fasteners rated for outdoor use</li>
-        <li>Hidden clips or deck screws</li>
-        <li>Optional: fascia boards and railing posts</li>
-      </ul>
-      <p class="note">Retailer buy links will appear here after affiliate networks are approved (Impact / CJ / Awin). See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+      <div id="shopGroups">
+        <noscript><p>Turn on JavaScript to build the shopping list. The math stays in your browser.</p></noscript>
+      </div>
+      <div class="shop-later">
+        <h3>Shop later</h3>
+        <p>Buy links are not connected yet. Copy or print this list and match the board in the aisle. Each line marked Link pending is a placeholder, not a store link.</p>
+        <div id="shopPending"></div>
+      </div>
+      <p class="note">When a retailer program is approved, a real link can replace a Link pending slot. See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
       <p class="disclaimer">Estimates only. Confirm actual board face width and spacing with the product. Not structural or code approval.</p>
     </div>
 
     <div class="no-print">
-      <h2>How we calculate</h2>
-      <div class="card note">
-        <ol>
-          <li>Effective pitch = board face width + gap (inches).</li>
-          <li>Rows = ceil( span perpendicular to boards × 12 ÷ pitch ).</li>
-          <li>Pieces per row = ceil( span along boards ÷ stock length ).</li>
-          <li>Raw boards = rows × pieces per row; buy = ceil(raw × (1 + waste%)).</li>
-          <li>Linear ft with waste = rows × along-span × (1 + waste%).</li>
-        </ol>
-        <p><strong>Example:</strong> 16×12 ft deck, boards parallel to length, 5.5 in face, 1/8 in gap, 12 ft stock, 10% waste → pitch 5.625 in → 26 rows → 2 boards/row → 52 raw → <strong>58</strong> to buy.</p>
-      </div>
-
       <h2>FAQ</h2>
       <div class="card">
         <p><strong>What face width should I use?</strong> Use the actual dressed width (often 5.5 in for “6 in” lumber, or the manufacturer’s stated face for composites).</p>
         <p><strong>How big a gap?</strong> Many wood decks use about 1/8 in; composites follow the brand’s clip or spacer guidance. Change the gap field to match.</p>
-        <p><strong>Why add waste?</strong> End cuts, bad boards, and picture-frame borders eat stock. 10% is a common planning buffer.</p>
+        <p><strong>Why add waste?</strong> End cuts, bad boards, and picture-frame borders eat stock. 10% is a common planning buffer. This count does not reuse offcuts on the next row.</p>
         <p><strong>Does this size joists or footings?</strong> No — this tool only estimates decking boards, not framing or permits.</p>
       </div>
-
       <p class="disclaimer">Estimates only. Confirm with product labels, local code, and your measurements. Not engineering advice.</p>
     </div>
   </main>
@@ -198,18 +259,65 @@
       <a href="../about.html">About</a>
     </div>
   </footer>
+  <script src="../js/calcs.js"></script>
+  <script src="../js/ui.js"></script>
   <script>
     (function () {
-      const $ = (id) => document.getElementById(id);
-      const ids = ["lengthFt","widthFt","boardWidthIn","gapIn","stockFt","wastePct","runAlong"];
+      var C = window.HFMCalcs;
+      var U = window.HFMUI;
+      var $ = function (id) { return document.getElementById(id); };
+      var applying = false;
+      var lastText = "";
 
-      function num(id) { return parseFloat($(id).value); }
+      var sceneUi = U.setupScenes($("sceneRow"), C.deckScenes, applyScene);
 
-      function setOut(b, r, lf, detail) {
-        $("outBoards").textContent = b;
-        $("outRows").textContent = r;
-        $("outLinFt").textContent = lf;
-        $("detail").textContent = detail || "";
+      function syncFinish() {
+        $("finishFields").hidden = !$("includeFinish").checked;
+      }
+
+      function fillBoard() {
+        var item = C.byId(C.deckPresets, $("boardPreset").value);
+        if (!item || item.faceIn == null) return;
+        $("boardWidthIn").value = item.faceIn;
+        $("gapIn").value = item.gapIn;
+      }
+
+      function fillFinish() {
+        var item = C.byId(C.finishPresets, $("finishPreset").value);
+        if (!item || item.coverage == null) return;
+        $("finishCoverage").value = item.coverage;
+      }
+
+      function applyScene(scene) {
+        applying = true;
+        $("lengthFt").value = scene.lengthFt;
+        $("widthFt").value = scene.widthFt;
+        $("boardPreset").value = scene.presetId;
+        fillBoard();
+        $("stockFt").value = String(scene.stockFt);
+        $("wastePct").value = scene.wastePct;
+        $("runAlong").value = scene.runAlong;
+        $("includeFascia").checked = !!scene.includeFascia;
+        $("includeFinish").checked = !!scene.includeFinish;
+        $("finishPreset").value = scene.finishPresetId;
+        fillFinish();
+        $("finishCoats").value = scene.finishCoats;
+        syncFinish();
+        applying = false;
+        sceneUi.press(scene.id);
+        calc();
+      }
+
+      function readNum(id) {
+        var raw = $(id).value.trim();
+        if (raw === "") return NaN;
+        return Number(raw);
+      }
+
+      function readInt(id) {
+        var raw = $(id).value.trim();
+        if (!/^\d+$/.test(raw)) return NaN;
+        return Number(raw);
       }
 
       function setButtons(on) {
@@ -217,139 +325,111 @@
         $("btnCopy").disabled = !on;
       }
 
-      function buildListText(boards, rows, perRow, stock, L, W, face, gap, waste, along) {
-        const lines = [
-          "HomeFixMath — Deck board shopping list",
-          "Deck: " + L + " × " + W + " ft · boards parallel to " + along,
-          "Face " + face + " in · gap " + gap + " in · stock " + stock + " ft · waste " + waste + "%",
-          "Rows: " + rows + " · pieces per row: " + perRow,
-          "",
-          boards + " × decking board(s) @ " + stock + " ft (match species & face width)",
-          "Outdoor-rated deck screws or hidden clips",
-          "Optional: fascia boards, railing posts, joist tape",
-          "",
-          "Estimates only — confirm face width and spacing with the product."
-        ];
-        return lines.join("\n");
+      function showEmpty() {
+        $("outBoards").textContent = "—";
+        $("outRows").textContent = "—";
+        $("outLinFt").textContent = "—";
+        $("callout").textContent = "";
+        U.clear($("why"));
+        U.renderHow($("howRun"), ["Fix the measurements above to see this run."]);
+        $("shopMeta").textContent = "Enter valid measurements above to build your list.";
+        U.clear($("shopGroups"));
+        U.clear($("shopPending"));
+        lastText = "";
       }
-
-      function renderShop(ok, boards, rows, perRow, stock, L, W, face, gap, waste, along) {
-        const meta = $("shopMeta");
-        const list = $("shopList");
-        if (!ok) {
-          meta.textContent = "Enter valid measurements above to build your list.";
-          list.innerHTML = [
-            "<li>Decking boards (match species, grade, and face width)</li>",
-            "<li>Joist hangers / fasteners rated for outdoor use</li>",
-            "<li>Hidden clips or deck screws</li>",
-            "<li>Optional: fascia boards and railing posts</li>"
-          ].join("");
-          return "";
-        }
-        meta.textContent = L + "×" + W + " ft · " + rows + " rows · " + boards + " boards @ " + stock + " ft.";
-        const items = [
-          boards + " × decking board(s) @ " + stock + " ft (match species &amp; face width)",
-          "Outdoor-rated deck screws or hidden clips",
-          "Optional: fascia boards, railing posts, joist tape"
-        ];
-        list.innerHTML = items.map((t) => "<li>" + t + "</li>").join("");
-        return buildListText(boards, rows, perRow, stock, L, W, face, gap, waste, along);
-      }
-
-      let lastListText = "";
 
       function calc() {
-        const err = $("error");
-        err.textContent = "";
+        $("error").textContent = "";
         $("copyStatus").textContent = "";
-        const L = num("lengthFt");
-        const W = num("widthFt");
-        const face = num("boardWidthIn");
-        const gap = num("gapIn");
-        const stock = num("stockFt");
-        const waste = num("wastePct");
-        const along = $("runAlong").value;
-
-        function fail(msg) {
-          err.textContent = msg;
-          setOut("—","—","—","");
+        syncFinish();
+        var board = C.byId(C.deckPresets, $("boardPreset").value);
+        var finish = C.byId(C.finishPresets, $("finishPreset").value);
+        var result = C.deck({
+          lengthFt: readNum("lengthFt"),
+          widthFt: readNum("widthFt"),
+          boardWidthIn: readNum("boardWidthIn"),
+          gapIn: readNum("gapIn"),
+          stockFt: readNum("stockFt"),
+          wastePct: readNum("wastePct"),
+          runAlong: $("runAlong").value,
+          boardName: board ? board.name : "decking",
+          fastenerName: board ? board.fastener : "Deck screws or hidden clips",
+          includeFascia: $("includeFascia").checked,
+          includeFinish: $("includeFinish").checked,
+          finishCoverage: readNum("finishCoverage"),
+          finishCoats: readInt("finishCoats"),
+          finishName: finish ? finish.name : "deck finish"
+        });
+        if (!result.ok) {
+          $("error").textContent = result.error;
           setButtons(false);
-          lastListText = "";
-          renderShop(false);
-        }
-
-        if (![L, W].every((v) => Number.isFinite(v) && v > 0)) {
-          fail("Enter deck length and width greater than 0 ft.");
+          showEmpty();
           return;
         }
-        if (L > 200 || W > 200) {
-          fail("Deck dimensions are outside the range this tool supports.");
-          return;
-        }
-        if (!Number.isFinite(face) || face < 1 || face > 12) {
-          fail("Board face width must be between 1 and 12 in.");
-          return;
-        }
-        if (!Number.isFinite(gap) || gap < 0 || gap > 1) {
-          fail("Gap must be between 0 and 1 in.");
-          return;
-        }
-        if (!Number.isFinite(stock) || stock < 4 || stock > 24) {
-          fail("Pick a stock board length between 4 and 24 ft.");
-          return;
-        }
-        if (!Number.isFinite(waste) || waste < 0 || waste > 40) {
-          fail("Waste % must be between 0 and 40.");
-          return;
-        }
-
-        const pitch = face + gap;
-        if (pitch <= 0) {
-          fail("Board width + gap must be greater than 0.");
-          return;
-        }
-
-        const perpFt = along === "length" ? W : L;
-        const alongFt = along === "length" ? L : W;
-        const rows = Math.ceil((perpFt * 12) / pitch);
-        const perRow = Math.ceil(alongFt / stock);
-        const raw = rows * perRow;
-        const buy = Math.ceil(raw * (1 + waste / 100));
-        const linFt = Math.ceil(rows * alongFt * (1 + waste / 100));
-        const alongLabel = along === "length" ? "length" : "width";
-
-        let detail = "Pitch " + pitch.toFixed(3) + " in across " + perpFt + " ft → " + rows + " rows × " + perRow + " pc/row = " + raw + " raw";
-        if (waste > 0) detail += " + " + waste + "% waste";
-        detail += ".";
-
-        setOut(String(buy), String(rows), String(linFt), detail);
+        $("outBoards").textContent = String(result.boards);
+        $("outRows").textContent = String(result.rows);
+        $("outLinFt").textContent = String(result.stockFt);
+        $("callout").textContent = result.callout;
+        U.renderWhy($("why"), result.why);
+        U.renderHow($("howRun"), result.how);
+        $("shopMeta").textContent = result.meta;
+        U.renderGroups($("shopGroups"), result.groups);
+        U.renderPending($("shopPending"), result.groups.map(function (group) { return group.name; }));
         setButtons(true);
-        lastListText = renderShop(true, buy, rows, perRow, stock, L, W, face, gap, waste, alongLabel);
+        lastText = U.toPlainText(
+          "HomeFixMath — Deck board shopping list",
+          [result.meta],
+          result.groups,
+          result.why,
+          result.copyNotes
+        );
       }
 
-      $("btnPrint").addEventListener("click", function () {
-        if ($("btnPrint").disabled) return;
-        window.print();
+      $("boardPreset").addEventListener("change", function () {
+        if (applying) return;
+        fillBoard();
+        sceneUi.clear();
+        calc();
       });
-      $("btnCopy").addEventListener("click", function () {
-        if (!lastListText) return;
-        const status = $("copyStatus");
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(lastListText).then(function () {
-            status.textContent = "Shopping list copied.";
-          }).catch(function () {
-            status.textContent = "Could not copy — select the list and copy manually.";
-          });
-        } else {
-          status.textContent = "Clipboard unavailable — select the list and copy manually.";
-        }
+      ["boardWidthIn", "gapIn"].forEach(function (id) {
+        $(id).addEventListener("input", function () {
+          if (applying) return;
+          $("boardPreset").value = "custom";
+          sceneUi.clear();
+          calc();
+        });
+      });
+      $("finishPreset").addEventListener("change", function () {
+        if (applying) return;
+        fillFinish();
+        sceneUi.clear();
+        calc();
+      });
+      $("finishCoverage").addEventListener("input", function () {
+        if (applying) return;
+        $("finishPreset").value = "custom";
+        sceneUi.clear();
+        calc();
+      });
+      ["lengthFt", "widthFt", "wastePct", "finishCoats"].forEach(function (id) {
+        $(id).addEventListener("input", function () {
+          if (applying) return;
+          sceneUi.clear();
+          calc();
+        });
+      });
+      ["stockFt", "runAlong", "includeFascia", "includeFinish"].forEach(function (id) {
+        $(id).addEventListener("change", function () {
+          if (applying) return;
+          syncFinish();
+          sceneUi.clear();
+          calc();
+        });
       });
 
-      ids.forEach((id) => {
-        $(id).addEventListener("input", calc);
-        $(id).addEventListener("change", calc);
-      });
-      calc();
+      U.bindPrint($("btnPrint"), $("howCalc"));
+      U.bindCopy($("btnCopy"), $("copyStatus"), function () { return lastText; });
+      applyScene(C.byId(C.deckScenes, "classic"));
     })();
   </script>
 </body>

@@ -158,6 +158,80 @@ var exactGap = calcs.deck({
 });
 assert(exactGap.ok && exactGap.rows === 10 && exactGap.needsRip === false, "phantom last gap is not a rip");
 
+var sidewalk = calcs.concreteFromScene(scene(calcs.concreteScenes, "sidewalk"));
+assert(sidewalk.ok && sidewalk.shape === "slab" && sidewalk.digs === true, "sidewalk ok");
+assert(sidewalk.neatCuFt === 20 && sidewalk.withWasteCuFt === 22, "sidewalk 20 cu ft, 22 with waste, got " + sidewalk.neatCuFt + "/" + sidewalk.withWasteCuFt);
+assert(sidewalk.yardsLabel === "0.81", "sidewalk yards 0.81, got " + sidewalk.yardsLabel);
+assert(sidewalk.bags80 === 37 && sidewalk.bags60 === 49 && sidewalk.bags40 === 74, "sidewalk bags 37/49/74, got " + [sidewalk.bags80, sidewalk.bags60, sidewalk.bags40].join("/"));
+assert(sidewalk.groups.map(function (g) { return g.name; }).join(",") === "80 lb bags,60 lb bags,40 lb bags,Not counted", "concrete groups");
+assert(/Rounded up/.test(sidewalk.callout) && /36\.67/.test(sidewalk.callout), "sidewalk explains the 80 lb round-up");
+assert(/Buy one size/.test(sidewalk.callout), "sidewalk says buy one size");
+assert(/0\.60 cu ft/.test(sidewalk.yieldNote) && /0\.45 cu ft/.test(sidewalk.yieldNote) && /0\.30 cu ft/.test(sidewalk.yieldNote), "yield note cites 0.60/0.45/0.30");
+assert(/QUIKRETE Concrete Mix data sheet #1101/.test(sidewalk.how.join(" ")), "how cites the data sheet");
+assert(/Call 811/.test(sidewalk.callout), "sidewalk mentions 811");
+assert(sidewalk.pending.join(",") === "80 lb concrete mix,60 lb concrete mix,40 lb concrete mix", "pending bag labels");
+noStoreUrls(sidewalk, "concrete");
+
+var postHole = calcs.concreteFromScene(scene(calcs.concreteScenes, "post"));
+var postExact = Math.PI * 0.5 * 0.5 * 2 * 1.1;
+assert(postHole.ok && postHole.shape === "cylinder" && postHole.digs === true, "post footing ok");
+assert(Math.abs(postHole.withWasteCuFt - postExact) < 1e-9, "post hole volume");
+assert(postHole.bags80 === 3 && postHole.bags60 === 4 && postHole.bags40 === 6, "post bags 3/4/6, got " + [postHole.bags80, postHole.bags60, postHole.bags40].join("/"));
+assert(postHole.yardsLabel === "0.064", "post yards 0.064, got " + postHole.yardsLabel);
+
+var strip = calcs.concreteFromScene(scene(calcs.concreteScenes, "strip"));
+assert(strip.ok && strip.shape === "footing" && strip.digs === true, "strip footing ok");
+assert(Math.abs(strip.neatCuFt - (20 * (8 / 12))) < 1e-9, "strip neat volume");
+assert(strip.bags80 === 25 && strip.bags60 === 33 && strip.bags40 === 49, "strip bags 25/33/49, got " + [strip.bags80, strip.bags60, strip.bags40].join("/"));
+
+var steps = calcs.concreteFromScene(scene(calcs.concreteScenes, "steps"));
+var stepNeat = 4 * (11 / 12) * (7 / 12) * (4 * 5 / 2);
+assert(steps.ok && steps.shape === "steps" && steps.digs === false, "steps ok and not marked as a dig");
+assert(Math.abs(steps.neatCuFt - stepNeat) < 1e-9, "steps solid-stack volume");
+assert(steps.bags80 === 40 && steps.bags60 === 53 && steps.bags40 === 79, "steps bags 40/53/79, got " + [steps.bags80, steps.bags60, steps.bags40].join("/"));
+assert(/excavate/.test(steps.callout), "steps still mention 811 if you excavate");
+assert(/filled stair|fill under/.test(steps.how.join(" ")), "steps explain the solid stack");
+
+var oneYard = calcs.concrete({
+  shape: "slab", lengthFt: 9, widthFt: 9, thicknessIn: 4, wastePct: 0
+});
+assert(oneYard.ok && oneYard.neatCuFt === 27 && oneYard.yardsLabel === "1.00", "1 cu yd slab, got " + oneYard.yardsLabel);
+assert(oneYard.bags80 === 45 && oneYard.bags60 === 60 && oneYard.bags40 === 90, "1 cu yd is 45/60/90 bags");
+assert(/whole number of bags/.test(oneYard.callout), "exact bags do not pretend to round up");
+
+var partial = calcs.concrete({
+  shape: "slab", lengthFt: 20, widthFt: 3, thicknessIn: 4, wastePct: 0
+});
+assert(partial.ok && partial.bags80 === 34 && /Rounded up/.test(partial.callout), "0% waste still rounds a partial bag, got " + partial.bags80);
+
+var thin = calcs.concrete({ shape: "slab", lengthFt: 10, widthFt: 10, thicknessIn: 1, wastePct: 10 });
+assert(!thin.ok && /2 and 24/.test(thin.error), "thickness under 2 in is rejected");
+
+var huge = calcs.concrete({ shape: "slab", lengthFt: 200, widthFt: 200, thicknessIn: 12, wastePct: 0 });
+assert(!huge.ok && /200 cubic yards/.test(huge.error), "oversize pour is rejected");
+
+var badShape = calcs.concrete({ shape: "driveway", wastePct: 10 });
+assert(!badShape.ok, "unknown shape fails");
+
+var fs = require("fs");
+var path = require("path");
+var root = path.join(__dirname, "..");
+function read(rel) { return fs.readFileSync(path.join(root, rel), "utf8"); }
+var concretePage = read("site/calculators/concrete.html");
+var homePage = read("site/index.html");
+var sitemap = read("site/sitemap.xml");
+assert(concretePage.indexOf("Concrete Calculator — Cubic Yards &amp; Bags (40/60/80 lb) | HomeFixMath") !== -1, "concrete title");
+assert(concretePage.indexOf('href="https://homefixmath.com/calculators/concrete"') !== -1, "concrete canonical");
+assert(concretePage.indexOf("How this was calculated") !== -1, "how summary");
+assert(concretePage.indexOf("QUIKRETE Concrete Mix data sheet #1101 states a 40 lb bag yields approximately 0.30 cu ft") !== -1, "on-page yield citation");
+assert(concretePage.indexOf("https://www.quikrete.com/pdfs/data_sheet-concrete%20mix%201101.pdf") !== -1, "data sheet link");
+assert(!/homedepot\.com|lowes\.com|amazon\.com|shareasale|impact\.com/i.test(concretePage), "concrete page has no store or network URL");
+assert(concretePage.indexOf("Link pending") !== -1, "link pending copy");
+assert(homePage.indexOf("Open concrete calculator") !== -1, "homepage CTA");
+assert(homePage.indexOf("calculators/fence-panels.html") !== -1 && homePage.indexOf("calculators/paint.html") !== -1 && homePage.indexOf("calculators/deck-boards.html") !== -1, "homepage keeps fence paint deck");
+assert(sitemap.indexOf("https://homefixmath.com/calculators/concrete") !== -1, "sitemap concrete");
+assert(sitemap.indexOf("https://homefixmath.com/calculators/fence-panels") !== -1, "sitemap still has fence");
+
 if (failed) {
   console.error(failed + " failed");
   process.exit(1);

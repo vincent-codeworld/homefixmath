@@ -6,6 +6,7 @@
 /
 ├── index.html                 Home — value prop, calculator list, CTA
 ├── calculators/
+│   ├── concrete.html          Live (lead tool)
 │   ├── fence-panels.html      Live
 │   ├── paint.html             Live (2026-10-28)
 │   └── deck-boards.html       Live (2026-10-28)
@@ -20,7 +21,7 @@ Later: `drywall.html`, `gravel-mulch.html` + short how-tos.
 
 | Page | Purpose | Must include |
 | --- | --- | --- |
-| Home | SEO hub + trust | H1, 5 calculator cards (3 live, 2 coming), disclosure in footer |
+| Home | SEO hub + trust | H1, calculator cards (concrete first, then fence/paint/deck, 2 coming), disclosure in footer |
 | Fence calculator | Core product | Working JS, formula notes, FAQ, shopping-list placeholders, disclosure |
 | Privacy | Compliance | Data practices (v1: no accounts; disclose analytics if added) |
 | Affiliate disclosure | FTC | Generic “may earn commission” until a network is live; then name it |

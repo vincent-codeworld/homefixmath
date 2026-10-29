@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Concrete Calculator — Cubic Yards &amp; Bags (40/60/80 lb) | HomeFixMath</title>
+  <meta name="description" content="Free DIY concrete calculator for slabs, post holes, footings, and steps. Cubic yards and 40/60/80 lb bag counts, with waste and a printable shopping list." />
+  <link rel="canonical" href="https://homefixmath.com/calculators/concrete" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HomeFixMath" />
+  <meta property="og:title" content="Concrete Calculator — Cubic Yards &amp; Bags (40/60/80 lb) | HomeFixMath" />
+  <meta property="og:description" content="Free DIY concrete calculator for slabs, post holes, footings, and steps. Cubic yards and 40/60/80 lb bag counts, with waste and a printable shopping list." />
+  <meta property="og:url" content="https://homefixmath.com/calculators/concrete" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Concrete Calculator — Cubic Yards &amp; Bags (40/60/80 lb) | HomeFixMath" />
+  <meta name="twitter:description" content="Free DIY concrete calculator for slabs, post holes, footings, and steps. Cubic yards and 40/60/80 lb bag counts, with waste and a printable shopping list." />
+  <meta name="twitter:url" content="https://homefixmath.com/calculators/concrete" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Concrete Calculator",
+        "url": "https://homefixmath.com/calculators/concrete",
+        "description": "Free DIY concrete calculator for slabs, post holes, footings, and steps. Cubic yards and 40/60/80 lb bag counts, with waste and a printable shopping list.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "isPartOf": {
+          "@type": "WebApplication",
+          "name": "HomeFixMath",
+          "url": "https://homefixmath.com/"
+        },
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "FAQPage",
+        "url": "https://homefixmath.com/calculators/concrete",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How many 80 lb bags are in a cubic yard?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "At the 0.60 cu ft yield published for QUIKRETE Concrete Mix, 27 ÷ 0.60 = 45 bags per cubic yard before waste. Add your waste percent, then round up to a whole bag."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why do bag counts round up?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Stores sell whole bags. If the math comes out to 36.67 bags, you buy 37. The page shows the exact figure before that round-up."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where do the bag yields come from?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "QUIKRETE Concrete Mix data sheet #1101: a 40 lb bag yields approximately 0.30 cu ft, a 60 lb bag approximately 0.45 cu ft, and an 80 lb bag approximately 0.60 cu ft. HomeFixMath is not a QUIKRETE partner. Other mixes, including fast-setting, can yield less — read the bag you buy."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does this design a footing or meet code?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. It is a volume and shopping estimate only. It does not check thickness, reinforcement, frost depth, or local rules. Verify the pour on site. Call 811 before you dig."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Primary">
+        <a class="brand" href="../index.html">HomeFixMath</a>
+        <a href="concrete.html">Concrete</a>
+        <a href="fence-panels.html">Fence</a>
+        <a href="paint.html">Paint</a>
+        <a href="deck-boards.html">Deck</a>
+        <a href="../about.html">About</a>
+        <a href="../affiliate-disclosure.html">Disclosure</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="wrap" tabindex="-1">
+    <h1>Concrete Calculator</h1>
+    <p class="lead">Pick a shape, set waste (default 10%), and see cubic yards plus bag counts for 40, 60, and 80 lb mix. Print or copy a shopping list. No account. Units: feet and inches.</p>
+
+    <div class="card no-print">
+      <fieldset class="scenes">
+        <legend>Start from a scene</legend>
+        <div id="sceneRow" class="scene-row" role="group" aria-label="Scene templates"></div>
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Shape</legend>
+        <div class="grid">
+          <div>
+            <label for="shape">What are you pouring?</label>
+            <select id="shape">
+              <option value="slab" selected>Slab or rectangle</option>
+              <option value="cylinder">Round column or post hole</option>
+              <option value="footing">Strip footing</option>
+              <option value="steps">Solid steps</option>
+            </select>
+          </div>
+          <div>
+            <label for="wastePct">Waste (%)</label>
+            <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" aria-describedby="wasteHint" />
+            <p class="hint" id="wasteHint">Default 10% for spillage, an uneven base, and a little left in the mixer. Added before the bag round-up.</p>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="block" id="slabFields">
+        <legend>Slab</legend>
+        <div class="grid">
+          <div>
+            <label for="lengthFt">Length (ft)</label>
+            <input id="lengthFt" type="number" min="0.1" max="200" step="0.1" value="20" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="widthFt">Width (ft)</label>
+            <input id="widthFt" type="number" min="0.1" max="200" step="0.1" value="3" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="thicknessIn">Thickness (in)</label>
+            <input id="thicknessIn" type="number" min="2" max="24" step="0.5" value="4" inputmode="decimal" />
+          </div>
+        </div>
+        <p class="hint">4 in is a thickness people often plan a sidewalk around. This does not say that thickness meets a local rule. The cited mix is published for pours about 2 in or thicker.</p>
+      </fieldset>
+
+      <fieldset class="block" id="cylinderFields" hidden>
+        <legend>Round pier or post hole</legend>
+        <div class="grid">
+          <div>
+            <label for="diameterIn">Diameter (in)</label>
+            <input id="diameterIn" type="number" min="4" max="36" step="0.5" value="12" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="depthIn">Depth (in)</label>
+            <input id="depthIn" type="number" min="6" max="120" step="1" value="24" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="holeCount">How many</label>
+            <input id="holeCount" type="number" min="1" max="50" step="1" value="1" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint">One cylinder per hole or pier. Depth is your measurement, not a frost-line recommendation. Call 811 before you dig.</p>
+      </fieldset>
+
+      <fieldset class="block" id="footingFields" hidden>
+        <legend>Strip footing</legend>
+        <div class="grid">
+          <div>
+            <label for="footingLengthFt">Length (ft)</label>
+            <input id="footingLengthFt" type="number" min="0.1" max="200" step="0.1" value="20" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="footingWidthIn">Width (in)</label>
+            <input id="footingWidthIn" type="number" min="4" max="48" step="0.5" value="12" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="footingDepthIn">Depth (in)</label>
+            <input id="footingDepthIn" type="number" min="4" max="48" step="0.5" value="8" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="footingCount">How many identical</label>
+            <input id="footingCount" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint">Length times width times depth, for each identical footing. The section is your measurement, not a structural size. Call 811 before you dig.</p>
+      </fieldset>
+
+      <fieldset class="block" id="stepsFields" hidden>
+        <legend>Solid steps</legend>
+        <div class="grid">
+          <div>
+            <label for="stepCount">Number of steps</label>
+            <input id="stepCount" type="number" min="1" max="20" step="1" value="4" inputmode="numeric" />
+          </div>
+          <div>
+            <label for="stepWidthFt">Width (ft)</label>
+            <input id="stepWidthFt" type="number" min="0.1" max="30" step="0.1" value="4" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="treadIn">Tread depth (in)</label>
+            <input id="treadIn" type="number" min="6" max="24" step="0.5" value="11" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="riserIn">Riser height (in)</label>
+            <input id="riserIn" type="number" min="4" max="12" step="0.5" value="7" inputmode="decimal" />
+          </div>
+        </div>
+        <p class="hint">Counts a filled stair: the first step is one riser tall, the next is two, and so on. An open underside uses less. These inputs are not a stair code.</p>
+      </fieldset>
+
+      <p class="error" id="error" role="alert" aria-live="polite"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="btnPrint" disabled>Print shopping list</button>
+        <button type="button" class="btn btn-secondary" id="btnCopy" disabled>Copy list</button>
+      </div>
+      <p class="note" id="copyStatus" aria-live="polite"></p>
+    </div>
+
+    <div class="card" id="resultCard">
+      <h2 class="result-title">The count</h2>
+      <div class="results results-4" aria-live="polite">
+        <div class="stat"><div class="n" id="outYards">—</div><div class="l">Cubic yards</div></div>
+        <div class="stat"><div class="n" id="out80">—</div><div class="l">80 lb bags</div></div>
+        <div class="stat"><div class="n" id="out60">—</div><div class="l">60 lb bags</div></div>
+        <div class="stat"><div class="n" id="out40">—</div><div class="l">40 lb bags</div></div>
+      </div>
+      <p class="callout" id="callout"></p>
+      <h3 class="why-title" id="whyTitle">Why these numbers</h3>
+      <div id="why" aria-labelledby="whyTitle"></div>
+      <details class="how" id="howCalc">
+        <summary>How this was calculated</summary>
+        <div class="how-run" id="howRun">
+          <p>Volume comes from the shape, then a waste percent (default 10%) is added. Cubic yards are that volume divided by 27 and left in decimals. Bag counts divide the same cubic feet by a published yield and round up, because a store sells whole bags. QUIKRETE Concrete Mix data sheet #1101 states a 40 lb bag yields approximately 0.30 cu ft, a 60 lb bag yields approximately 0.45 cu ft, and an 80 lb bag yields approximately 0.60 cu ft. Buy one size, not all three. This is a planning estimate, not a structural design. Call 811 before you dig.</p>
+        </div>
+      </details>
+      <p class="note yield-cite">Bag counts use published yields for a standard concrete mix, not a store partnership. QUIKRETE Concrete Mix data sheet #1101 states a 40 lb bag yields approximately 0.30 cu ft, a 60 lb bag yields approximately 0.45 cu ft, and an 80 lb bag yields approximately 0.60 cu ft. Source: <a href="https://www.quikrete.com/pdfs/data_sheet-concrete%20mix%201101.pdf">QUIKRETE Concrete Mix data sheet (product #1101)</a>. HomeFixMath is not affiliated with The QUIKRETE Companies. Fast-setting and other mixes can yield less — read the bag you buy.</p>
+    </div>
+
+    <div class="card print-block" id="shoppingCard">
+      <h2 class="print-only">HomeFixMath — Concrete shopping list</h2>
+      <h2 class="no-print">Shopping list</h2>
+      <p class="note" id="shopMeta">Enter valid measurements above to build your list.</p>
+      <div id="shopGroups">
+        <noscript><p>Turn on JavaScript to build the shopping list. The math stays in your browser.</p></noscript>
+      </div>
+      <p class="note">The 80, 60, and 40 lb groups are the same pour. Buy one size.</p>
+      <div class="shop-later">
+        <h3>Shop later</h3>
+        <p>Buy links are not connected yet. Copy or print this list and match the bag in the aisle. Each line marked Link pending is a placeholder, not a store link.</p>
+        <div id="shopPending"></div>
+      </div>
+      <p class="note">When a retailer program is approved, a real link can replace a Link pending slot. See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+      <p class="disclaimer">Planning estimate only — not a structural design or a code check. Verify the pour on site. Call 811 before you dig.</p>
+    </div>
+
+    <div class="no-print">
+      <h2>FAQ</h2>
+      <div class="card">
+        <p><strong>How many 80 lb bags are in a cubic yard?</strong> At the 0.60 cu ft yield published for QUIKRETE Concrete Mix, 27 ÷ 0.60 = 45 bags per cubic yard before waste. Add your waste percent, then round up to a whole bag.</p>
+        <p><strong>Why do bag counts round up?</strong> Stores sell whole bags. If the math comes out to 36.67 bags, you buy 37. The page shows the exact figure before that round-up.</p>
+        <p><strong>Where do the bag yields come from?</strong> QUIKRETE Concrete Mix data sheet #1101: a 40 lb bag yields approximately 0.30 cu ft, a 60 lb bag approximately 0.45 cu ft, and an 80 lb bag approximately 0.60 cu ft. HomeFixMath is not a QUIKRETE partner. Other mixes, including fast-setting, can yield less — read the bag you buy.</p>
+        <p><strong>Does this design a footing or meet code?</strong> No. It is a volume and shopping estimate only. It does not check thickness, reinforcement, frost depth, or local rules. Verify the pour on site. Call 811 before you dig.</p>
+      </div>
+      <p class="disclaimer">Planning estimate only. Confirm the yield on the bag you buy, and the thickness on site. Not engineering advice. Call 811 before you dig.</p>
+    </div>
+  </main>
+  <footer class="no-print">
+    <div class="wrap">
+      <a href="../index.html">Home</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>
+      <a href="../about.html">About</a>
+    </div>
+  </footer>
+  <script src="../js/calcs.js"></script>
+  <script src="../js/ui.js"></script>
+  <script>
+    (function () {
+      var C = window.HFMCalcs;
+      var U = window.HFMUI;
+      var $ = function (id) { return document.getElementById(id); };
+      var applying = false;
+      var lastText = "";
+
+      var sceneUi = U.setupScenes($("sceneRow"), C.concreteScenes, applyScene);
+
+      function syncShape() {
+        var shape = $("shape").value;
+        $("slabFields").hidden = shape !== "slab";
+        $("cylinderFields").hidden = shape !== "cylinder";
+        $("footingFields").hidden = shape !== "footing";
+        $("stepsFields").hidden = shape !== "steps";
+      }
+
+      function applyScene(scene) {
+        applying = true;
+        $("shape").value = scene.shape;
+        $("lengthFt").value = scene.lengthFt;
+        $("widthFt").value = scene.widthFt;
+        $("thicknessIn").value = scene.thicknessIn;
+        $("diameterIn").value = scene.diameterIn;
+        $("depthIn").value = scene.depthIn;
+        $("holeCount").value = scene.holeCount;
+        $("footingLengthFt").value = scene.footingLengthFt;
+        $("footingWidthIn").value = scene.footingWidthIn;
+        $("footingDepthIn").value = scene.footingDepthIn;
+        $("footingCount").value = scene.footingCount;
+        $("stepWidthFt").value = scene.stepWidthFt;
+        $("treadIn").value = scene.treadIn;
+        $("riserIn").value = scene.riserIn;
+        $("stepCount").value = scene.stepCount;
+        $("wastePct").value = scene.wastePct;
+        syncShape();
+        applying = false;
+        sceneUi.press(scene.id);
+        calc();
+      }
+
+      function readNum(id) {
+        var raw = $(id).value.trim();
+        if (raw === "") return NaN;
+        return Number(raw);
+      }
+
+      function readInt(id) {
+        var raw = $(id).value.trim();
+        if (!/^\d+$/.test(raw)) return NaN;
+        return Number(raw);
+      }
+
+      function setButtons(on) {
+        $("btnPrint").disabled = !on;
+        $("btnCopy").disabled = !on;
+      }
+
+      function showEmpty() {
+        $("outYards").textContent = "—";
+        $("out80").textContent = "—";
+        $("out60").textContent = "—";
+        $("out40").textContent = "—";
+        $("callout").textContent = "";
+        U.clear($("why"));
+        U.renderHow($("howRun"), ["Fix the measurements above to see this run."]);
+        $("shopMeta").textContent = "Enter valid measurements above to build your list.";
+        U.clear($("shopGroups"));
+        U.clear($("shopPending"));
+        lastText = "";
+      }
+
+      function calc() {
+        $("error").textContent = "";
+        $("copyStatus").textContent = "";
+        syncShape();
+        var result = C.concrete({
+          shape: $("shape").value,
+          wastePct: readNum("wastePct"),
+          lengthFt: readNum("lengthFt"),
+          widthFt: readNum("widthFt"),
+          thicknessIn: readNum("thicknessIn"),
+          diameterIn: readNum("diameterIn"),
+          depthIn: readNum("depthIn"),
+          holeCount: readInt("holeCount"),
+          footingLengthFt: readNum("footingLengthFt"),
+          footingWidthIn: readNum("footingWidthIn"),
+          footingDepthIn: readNum("footingDepthIn"),
+          footingCount: readInt("footingCount"),
+          stepWidthFt: readNum("stepWidthFt"),
+          treadIn: readNum("treadIn"),
+          riserIn: readNum("riserIn"),
+          stepCount: readInt("stepCount")
+        });
+        if (!result.ok) {
+          $("error").textContent = result.error;
+          setButtons(false);
+          showEmpty();
+          return;
+        }
+        $("outYards").textContent = result.yardsLabel;
+        $("out80").textContent = String(result.bags80);
+        $("out60").textContent = String(result.bags60);
+        $("out40").textContent = String(result.bags40);
+        $("callout").textContent = result.callout;
+        U.renderWhy($("why"), result.why);
+        U.renderHow($("howRun"), result.how);
+        $("shopMeta").textContent = result.meta;
+        U.renderGroups($("shopGroups"), result.groups);
+        U.renderPending($("shopPending"), result.pending);
+        setButtons(true);
+        lastText = U.toPlainText(
+          "HomeFixMath — Concrete shopping list",
+          [result.meta, "Buy one bag size, not all three."],
+          result.groups,
+          result.why,
+          result.copyNotes
+        );
+      }
+
+      $("shape").addEventListener("change", function () {
+        if (applying) return;
+        sceneUi.clear();
+        syncShape();
+        calc();
+      });
+
+      ["lengthFt", "widthFt", "thicknessIn", "diameterIn", "depthIn", "holeCount", "footingLengthFt", "footingWidthIn", "footingDepthIn", "footingCount", "stepWidthFt", "treadIn", "riserIn", "stepCount", "wastePct"].forEach(function (id) {
+        $(id).addEventListener("input", function () {
+          if (applying) return;
+          sceneUi.clear();
+          calc();
+        });
+      });
+
+      U.bindPrint($("btnPrint"), $("howCalc"));
+      U.bindCopy($("btnCopy"), $("copyStatus"), function () { return lastText; });
+      applyScene(C.byId(C.concreteScenes, "sidewalk"));
+    })();
+  </script>
+</body>
+</html>

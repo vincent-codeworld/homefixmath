@@ -99,6 +99,23 @@
     { id: "composite", label: "20×14 composite, clip gap", lengthFt: 20, widthFt: 14, presetId: "composite-clip", stockFt: 16, wastePct: 10, runAlong: "length", includeFascia: false, includeFinish: false, finishPresetId: "stain-250", finishCoats: 2 }
   ];
 
+  /* Published yields for QUIKRETE Concrete Mix #1101 (standard mix), not a partnership.
+     40 lb ≈ 0.30 cu ft, 60 lb ≈ 0.45 cu ft, 80 lb ≈ 0.60 cu ft. */
+  var concreteYields = [
+    { pounds: 80, cuFt: 0.60 },
+    { pounds: 60, cuFt: 0.45 },
+    { pounds: 40, cuFt: 0.30 }
+  ];
+
+  var concreteYieldNote = "QUIKRETE Concrete Mix data sheet #1101 states a 40 lb bag yields approximately 0.30 cu ft, a 60 lb bag yields approximately 0.45 cu ft, and an 80 lb bag yields approximately 0.60 cu ft.";
+
+  var concreteScenes = [
+    { id: "sidewalk", label: "Sidewalk slab, 20×3 ft × 4 in", shape: "slab", lengthFt: 20, widthFt: 3, thicknessIn: 4, diameterIn: 12, depthIn: 24, holeCount: 1, footingLengthFt: 20, footingWidthIn: 12, footingDepthIn: 8, footingCount: 1, stepWidthFt: 4, treadIn: 11, riserIn: 7, stepCount: 4, wastePct: 10 },
+    { id: "post", label: "Post footing, 12 in round × 24 in", shape: "cylinder", lengthFt: 20, widthFt: 3, thicknessIn: 4, diameterIn: 12, depthIn: 24, holeCount: 1, footingLengthFt: 20, footingWidthIn: 12, footingDepthIn: 8, footingCount: 1, stepWidthFt: 4, treadIn: 11, riserIn: 7, stepCount: 4, wastePct: 10 },
+    { id: "strip", label: "Strip footing, 20 ft × 12 in × 8 in", shape: "footing", lengthFt: 20, widthFt: 3, thicknessIn: 4, diameterIn: 12, depthIn: 24, holeCount: 1, footingLengthFt: 20, footingWidthIn: 12, footingDepthIn: 8, footingCount: 1, stepWidthFt: 4, treadIn: 11, riserIn: 7, stepCount: 4, wastePct: 10 },
+    { id: "steps", label: "Entry steps, 4 steps × 4 ft", shape: "steps", lengthFt: 20, widthFt: 3, thicknessIn: 4, diameterIn: 12, depthIn: 24, holeCount: 1, footingLengthFt: 20, footingWidthIn: 12, footingDepthIn: 8, footingCount: 1, stepWidthFt: 4, treadIn: 11, riserIn: 7, stepCount: 4, wastePct: 10 }
+  ];
+
   function fence(input) {
     var total = input.totalLengthFt;
     var panelW = input.panelWidthFt;
@@ -204,7 +221,7 @@
     if (gates > 0) {
       hardware.unshift(gates + " × gate kit" + (gates === 1 ? "" : "s") + ", about " + trimNum(gateEach, 2) + " ft wide, plus hinge and latch hardware");
     }
-    hardware.push("Post-hole concrete or gravel — not estimated. This list does not choose hole size or bag count.");
+    hardware.push("Post-hole concrete or gravel — bag count is not on this list. Use a concrete calculator for a round hole, then confirm depth on site.");
 
     var how = [
       "Net length is the run minus every gate. " + trimNum(total, 2) + " − " + trimNum(gateTotal, 2) + " = " + trimNum(net, 2) + " ft.",
@@ -523,6 +540,217 @@
     };
   }
 
+  function yieldFixed(n) {
+    return n.toFixed(2);
+  }
+
+  function formatYards(cuYd) {
+    if (cuYd < 0.1) return cuYd.toFixed(3);
+    return cuYd.toFixed(2);
+  }
+
+  function concreteBag(volumeCuFt, spec) {
+    var exact = volumeCuFt / spec.cuFt;
+    return {
+      pounds: spec.pounds,
+      yieldCuFt: spec.cuFt,
+      exact: exact,
+      buy: ceilStable(exact),
+      whole: Math.abs(exact - Math.round(exact)) < 1e-6
+    };
+  }
+
+  function concrete(input) {
+    var shape = input.shape;
+    var waste = input.wastePct;
+    var shapes = { slab: true, cylinder: true, footing: true, steps: true };
+    if (!shapes[shape]) return fail("Choose a slab, round pier, strip footing, or steps.");
+    if (!Number.isFinite(waste) || waste < 0 || waste > 40) return fail("Waste % must be between 0 and 40.");
+
+    var neat = 0;
+    var digs = true;
+    var summary = "";
+    var formula = "";
+    var extraHow = "";
+
+    if (shape === "slab") {
+      var lengthFt = input.lengthFt;
+      var widthFt = input.widthFt;
+      var thicknessIn = input.thicknessIn;
+      if (!Number.isFinite(lengthFt) || lengthFt <= 0) return fail("Enter a slab length greater than 0 ft.");
+      if (lengthFt > 200) return fail("Slab length must be 200 ft or less for this tool.");
+      if (!Number.isFinite(widthFt) || widthFt <= 0) return fail("Enter a slab width greater than 0 ft.");
+      if (widthFt > 200) return fail("Slab width must be 200 ft or less for this tool.");
+      if (!Number.isFinite(thicknessIn) || thicknessIn < 2 || thicknessIn > 24) {
+        return fail("Thickness must be between 2 and 24 inches. The cited mix is published for pours about 2 inches thick or more. This is not a code thickness.");
+      }
+      var thickFt = thicknessIn / 12;
+      neat = lengthFt * widthFt * thickFt;
+      summary = "Slab " + trimNum(lengthFt, 2) + " ft × " + trimNum(widthFt, 2) + " ft × " + trimNum(thicknessIn, 2) + " in";
+      formula = trimNum(lengthFt, 2) + " × " + trimNum(widthFt, 2) + " × (" + trimNum(thicknessIn, 2) + " ÷ 12) = " + trimNum(neat, 2) + " cu ft.";
+      extraHow = "A slab is length × width × thickness, with inches turned into feet.";
+    } else if (shape === "cylinder") {
+      var diameterIn = input.diameterIn;
+      var depthIn = input.depthIn;
+      var holeCount = input.holeCount;
+      if (!Number.isFinite(diameterIn) || diameterIn < 4 || diameterIn > 36) return fail("Diameter must be between 4 and 36 inches.");
+      if (!Number.isFinite(depthIn) || depthIn < 6 || depthIn > 120) return fail("Depth must be between 6 and 120 inches.");
+      if (!isInt(holeCount) || holeCount < 1 || holeCount > 50) return fail("Hole count must be a whole number from 1 to 50.");
+      var radiusFt = diameterIn / 24;
+      var heightFt = depthIn / 12;
+      var oneHole = Math.PI * radiusFt * radiusFt * heightFt;
+      neat = oneHole * holeCount;
+      summary = holeCount + " round pier" + (holeCount === 1 ? "" : "s") + ", " + trimNum(diameterIn, 2) + " in across × " + trimNum(depthIn, 2) + " in deep";
+      formula = "π × (" + trimNum(diameterIn / 2, 2) + " ÷ 12)² × (" + trimNum(depthIn, 2) + " ÷ 12) = " + trimNum(oneHole, 2) + " cu ft each. × " + holeCount + " = " + trimNum(neat, 2) + " cu ft.";
+      extraHow = "A round pier or post hole is a cylinder: π × radius² × depth. Depth is the number you typed, not a frost-line recommendation.";
+    } else if (shape === "footing") {
+      var footingLengthFt = input.footingLengthFt;
+      var footingWidthIn = input.footingWidthIn;
+      var footingDepthIn = input.footingDepthIn;
+      var footingCount = input.footingCount;
+      if (!Number.isFinite(footingLengthFt) || footingLengthFt <= 0) return fail("Enter a footing length greater than 0 ft.");
+      if (footingLengthFt > 200) return fail("Footing length must be 200 ft or less for this tool.");
+      if (!Number.isFinite(footingWidthIn) || footingWidthIn < 4 || footingWidthIn > 48) return fail("Footing width must be between 4 and 48 inches.");
+      if (!Number.isFinite(footingDepthIn) || footingDepthIn < 4 || footingDepthIn > 48) return fail("Footing depth must be between 4 and 48 inches.");
+      if (!isInt(footingCount) || footingCount < 1 || footingCount > 20) return fail("Footing count must be a whole number from 1 to 20.");
+      var oneFoot = footingLengthFt * (footingWidthIn / 12) * (footingDepthIn / 12);
+      neat = oneFoot * footingCount;
+      summary = footingCount + " strip footing" + (footingCount === 1 ? "" : "s") + ", " + trimNum(footingLengthFt, 2) + " ft × " + trimNum(footingWidthIn, 2) + " in wide × " + trimNum(footingDepthIn, 2) + " in deep";
+      formula = trimNum(footingLengthFt, 2) + " × (" + trimNum(footingWidthIn, 2) + " ÷ 12) × (" + trimNum(footingDepthIn, 2) + " ÷ 12) = " + trimNum(oneFoot, 2) + " cu ft each. × " + footingCount + " = " + trimNum(neat, 2) + " cu ft.";
+      extraHow = "A strip footing is length × width × depth, times how many identical ones you entered. The section is your measurement, not a structural size.";
+    } else {
+      var stepWidthFt = input.stepWidthFt;
+      var treadIn = input.treadIn;
+      var riserIn = input.riserIn;
+      var stepCount = input.stepCount;
+      if (!Number.isFinite(stepWidthFt) || stepWidthFt <= 0) return fail("Enter a step width greater than 0 ft.");
+      if (stepWidthFt > 30) return fail("Step width must be 30 ft or less for this tool.");
+      if (!Number.isFinite(treadIn) || treadIn < 6 || treadIn > 24) return fail("Tread depth must be between 6 and 24 inches.");
+      if (!Number.isFinite(riserIn) || riserIn < 4 || riserIn > 12) return fail("Riser height must be between 4 and 12 inches.");
+      if (!isInt(stepCount) || stepCount < 1 || stepCount > 20) return fail("Step count must be a whole number from 1 to 20.");
+      var stack = stepCount * (stepCount + 1) / 2;
+      neat = stepWidthFt * (treadIn / 12) * (riserIn / 12) * stack;
+      digs = false;
+      summary = stepCount + " solid step" + (stepCount === 1 ? "" : "s") + ", " + trimNum(stepWidthFt, 2) + " ft wide, " + trimNum(treadIn, 2) + " in tread, " + trimNum(riserIn, 2) + " in riser";
+      formula = trimNum(stepWidthFt, 2) + " × (" + trimNum(treadIn, 2) + " ÷ 12) × (" + trimNum(riserIn, 2) + " ÷ 12) × " + trimNum(stack, 0) + " = " + trimNum(neat, 2) + " cu ft. The " + trimNum(stack, 0) + " is 1 + 2 + … + " + stepCount + " riser-heights, a filled stair.";
+      extraHow = "Solid steps assume fill under the treads: the first step is one riser tall, the next is two, and so on. An open underside uses less concrete than this count. These ranges are for the form, not a stair code.";
+    }
+
+    if (!Number.isFinite(neat) || neat <= 0) return fail("Volume must be greater than 0.");
+    if (neat > 5400) return fail("That volume is over 200 cubic yards. This tool is for a DIY bag estimate — split the pour or ask a ready-mix yard.");
+
+    var withWaste = neat * (1 + waste / 100);
+    var cuYd = withWaste / 27;
+    var yardsLabel = formatYards(cuYd);
+    var bags = concreteYields.map(function (spec) { return concreteBag(withWaste, spec); });
+    var byPound = {};
+    bags.forEach(function (bag) { byPound[bag.pounds] = bag; });
+
+    var why = [
+      { k: "Volume", v: formula },
+      { k: "Waste", v: waste === 0
+        ? "0%. The order uses " + trimNum(neat, 2) + " cu ft, the same as the shape."
+        : trimNum(waste, 2) + "% on top of " + trimNum(neat, 2) + " cu ft → " + trimNum(withWaste, 2) + " cu ft." },
+      { k: "Cubic yards", v: trimNum(withWaste, 2) + " ÷ 27 = " + yardsLabel + " cu yd with waste. Yards stay in decimals. They are not rounded up to a truck." }
+    ];
+    bags.forEach(function (bag) {
+      var line = trimNum(withWaste, 2) + " ÷ " + yieldFixed(bag.yieldCuFt) + " = " + trimNum(bag.exact, 2) + " → buy " + bag.buy + ".";
+      if (bag.whole) line += " That lands on a whole bag, so the round-up adds nothing.";
+      else line += " Rounded up because you cannot buy a fraction of a bag.";
+      why.push({ k: bag.pounds + " lb", v: line });
+    });
+
+    var roundups = bags.filter(function (bag) { return !bag.whole; });
+    var callout;
+    if (!roundups.length) {
+      callout = "Each bag size lands on a whole number of bags, so the round-up adds nothing. Buy one size, not all three.";
+    } else {
+      callout = roundups.map(function (bag) {
+        return bag.pounds + " lb is " + trimNum(bag.exact, 2) + " → buy " + bag.buy;
+      }).join(". ") + ". Rounded up because you cannot buy a fraction of a bag. Buy one size, not all three.";
+    }
+    if (digs) callout += " Call 811 before you dig.";
+    else callout += " If you excavate a pad for these steps, call 811 before you dig.";
+
+    var groups = bags.map(function (bag) {
+      var tail = bag.whole
+        ? " → " + bag.buy + " (already a whole bag)."
+        : " → buy " + bag.buy + ". Rounded up to a whole bag.";
+      return {
+        name: bag.pounds + " lb bags",
+        items: [
+          bag.buy + " × " + bag.pounds + " lb bag" + (bag.buy === 1 ? "" : "s") + " of concrete mix",
+          trimNum(withWaste, 2) + " cu ft ÷ " + yieldFixed(bag.yieldCuFt) + " cu ft per bag = " + trimNum(bag.exact, 2) + tail
+        ]
+      };
+    });
+
+    var supplies = [
+      "Water — follow the bag you buy. This list does not set a water amount.",
+      "Reinforcement is not sized. This is not a structural design."
+    ];
+    if (shape === "slab") {
+      supplies.unshift("Form boards and stakes — not counted.");
+      supplies.unshift("Gravel subbase — not counted.");
+    } else if (shape === "cylinder") {
+      supplies.unshift("Tube or round form — not counted.");
+      supplies.unshift("Gravel in the bottom of the hole — not counted.");
+    } else if (shape === "footing") {
+      supplies.unshift("Forms, if any of the footing is above grade — not counted.");
+      supplies.unshift("The trench itself is your measurement, not a code section.");
+    } else {
+      supplies.unshift("Riser forms — not counted.");
+      supplies.unshift("This count fills under the treads. An open underside needs less.");
+    }
+    groups.push({ name: "Not counted", items: supplies });
+
+    var how = [
+      extraHow + " " + formula,
+      waste === 0
+        ? "Waste is 0%, so the bag math uses " + trimNum(neat, 2) + " cu ft."
+        : "Waste is " + trimNum(waste, 2) + "%: " + trimNum(neat, 2) + " × " + trimNum(1 + waste / 100, 2) + " = " + trimNum(withWaste, 2) + " cu ft.",
+      "Cubic yards are that volume divided by 27, shown as " + yardsLabel + ". The decimals are the volume. They are not a ready-mix order, and many yards have their own minimum.",
+      "Bag counts divide the waste-adjusted cubic feet by a published yield, then round up to a whole bag. " + concreteYieldNote + " HomeFixMath is not affiliated with QUIKRETE. Fast-setting and other mixes can yield less — read the bag you buy.",
+      "Buy one bag size. The 80, 60, and 40 lb lines are the same pour.",
+      "This is a planning volume only. It does not choose thickness, reinforcement, frost depth, or whether the pour meets a code. Verify it on site."
+    ];
+    if (digs) how.push("This shape means digging or disturbing soil. Call 811 before you dig.");
+    else how.push("Steps may still need a dug pad. If you excavate, call 811 before you dig.");
+
+    var copyNotes = [
+      "Buy one bag size, not all three. The three lines are the same volume.",
+      concreteYieldNote + " HomeFixMath is not affiliated with QUIKRETE. Fast-setting and other mixes can yield less — read the bag you buy.",
+      "Cubic yards are the volume with waste (" + yardsLabel + " cu yd). They are not a rounded truck order.",
+      "Shop later: retailer links are not connected. Nothing on this list is a store link.",
+      "Planning estimate only. Not a structural design, footing size, or code check. Verify thickness, base, and the mix on site."
+    ];
+    if (digs) copyNotes.push("Call 811 before you dig.");
+    else copyNotes.push("If you excavate a pad for these steps, call 811 before you dig.");
+
+    return {
+      ok: true,
+      shape: shape,
+      summary: summary,
+      digs: digs,
+      neatCuFt: neat,
+      withWasteCuFt: withWaste,
+      cuYd: cuYd,
+      yardsLabel: yardsLabel,
+      bags80: byPound[80].buy,
+      bags60: byPound[60].buy,
+      bags40: byPound[40].buy,
+      bags: bags,
+      callout: callout,
+      why: why,
+      how: how,
+      meta: summary + " · " + trimNum(withWaste, 2) + " cu ft with " + trimNum(waste, 2) + "% waste · " + yardsLabel + " cu yd",
+      groups: groups,
+      pending: ["80 lb concrete mix", "60 lb concrete mix", "40 lb concrete mix"],
+      copyNotes: copyNotes,
+      yieldNote: concreteYieldNote
+    };
+  }
+
   function fenceFromScene(scene) {
     var preset = byId(fencePresets, scene.presetId);
     return fence({
@@ -562,6 +790,27 @@
     });
   }
 
+  function concreteFromScene(scene) {
+    return concrete({
+      shape: scene.shape,
+      wastePct: scene.wastePct,
+      lengthFt: scene.lengthFt,
+      widthFt: scene.widthFt,
+      thicknessIn: scene.thicknessIn,
+      diameterIn: scene.diameterIn,
+      depthIn: scene.depthIn,
+      holeCount: scene.holeCount,
+      footingLengthFt: scene.footingLengthFt,
+      footingWidthIn: scene.footingWidthIn,
+      footingDepthIn: scene.footingDepthIn,
+      footingCount: scene.footingCount,
+      stepWidthFt: scene.stepWidthFt,
+      treadIn: scene.treadIn,
+      riserIn: scene.riserIn,
+      stepCount: scene.stepCount
+    });
+  }
+
   function deckFromScene(scene) {
     var preset = byId(deckPresets, scene.presetId);
     var finish = byId(finishPresets, scene.finishPresetId);
@@ -597,11 +846,16 @@
     deckPresets: deckPresets,
     finishPresets: finishPresets,
     deckScenes: deckScenes,
+    concreteYields: concreteYields,
+    concreteYieldNote: concreteYieldNote,
+    concreteScenes: concreteScenes,
     fence: fence,
     paint: paint,
     deck: deck,
+    concrete: concrete,
     fenceFromScene: fenceFromScene,
     paintFromScene: paintFromScene,
-    deckFromScene: deckFromScene
+    deckFromScene: deckFromScene,
+    concreteFromScene: concreteFromScene
   };
 });

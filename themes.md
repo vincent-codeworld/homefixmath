@@ -64,7 +64,7 @@ Ranked by **search intent** (DIY quantity queries) × **materials-buy conversion
 | Topic | Why deferred |
 | --- | --- |
 | Floor / wall tile | Good #6; more waste/pattern edge cases. |
-| Concrete bag mix | Overlaps gravel volume math; park as #7. |
+| Concrete bag mix | Shipped as the lead calculator (slab, round pier, strip footing, solid steps → yards and 40/60/80 lb bags). Separate from gravel/mulch. |
 | Wallpaper / peel-stick | Narrower content cluster later. |
 
 ## Ship order

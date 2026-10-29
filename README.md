@@ -1,6 +1,6 @@
 # HomeFixMath
 
-Free **US customary** DIY material calculators. First live tool: **fence panels / posts / caps**, with a printable shopping list.
+Free **US customary** DIY material calculators. Lead tool: **concrete yards and bag counts**, with fence, paint, and deck still on the site. Each one ends in a printable shopping list.
 
 **Operator:** Vincent (China-based). Day-to-day site and content: agent. Human-only gates: domain payment, KYC, tax forms, OTPs.
 
@@ -38,6 +38,7 @@ homecalcmath/
     index.html
     styles.css
     about.html / privacy.html / affiliate-disclosure.html
+    calculators/concrete.html
     calculators/fence-panels.html
     calculators/paint.html
     calculators/deck-boards.html
@@ -50,6 +51,7 @@ Open locally: `site/index.html` in a browser (no build step).
 ## Site status
 
 - US English copy; FTC affiliate disclosure names **networks generically** (Impact / CJ / Awin / Gumroad) — not Amazon-only  
+- Concrete calculator (lead tool): slab, round pier, strip footing, and solid steps → cubic yards and 40/60/80 lb bag counts. Yields cited from the QUIKRETE Concrete Mix #1101 data sheet (about 0.30 / 0.45 / 0.60 cu ft). Waste defaults to 10%. Grouped **Print** / **Copy** shopping list. Planning estimate only.
 - Fence, paint, and deck calculators: material presets, one-click scenes, visible waste / rounding / openings, grouped **Print** / **Copy** shopping list, and a short “How this was calculated” note
 - Affiliate buy buttons: “Link pending” placeholders until a network is approved — no affiliate URLs yet  
 

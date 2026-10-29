@@ -48,7 +48,7 @@
             "name": "How many posts for 100 feet?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "With 8-ft panels and one 4-ft gate: 15 posts (see example above)."
+              "text": "With 8 ft panels and one 4 ft gate, the layout is 12 panels and 15 posts. A 10% waste buffer rounds the panel order up to 14. Posts stay at 15, because spare panels are not extra bays."
             }
           },
           {
@@ -72,7 +72,7 @@
             "name": "Why round up panels?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "A partial bay still needs a full panel to cut down. Order extras if your line is uneven."
+              "text": "A short last bay still needs a full panel you can trim. Waste is applied after that layout count, then rounded up to a whole panel so the order is not short."
             }
           }
         ]
@@ -82,9 +82,10 @@
   </script>
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
   <header>
     <div class="wrap">
-      <nav>
+      <nav aria-label="Primary">
         <a class="brand" href="../index.html">HomeFixMath</a>
         <a href="fence-panels.html">Fence</a>
         <a href="paint.html">Paint</a>
@@ -94,48 +95,82 @@
       </nav>
     </div>
   </header>
-  <main class="wrap">
+  <main id="main" class="wrap" tabindex="-1">
     <h1>Fence Panel &amp; Post Calculator</h1>
-    <p class="lead">Estimate prefab panels, posts, and caps for a straight (or multi-gate) fence run. Units: feet. Print the shopping list before you buy.</p>
+    <p class="lead">Pick a common panel, or type your own width. Gates, a waste buffer, and the last bay stay on the page, then the shopping list rounds up. Units: feet.</p>
 
     <div class="card no-print">
-      <div class="grid">
-        <div>
-          <label for="totalLengthFt">Total fence run length (ft)</label>
-          <input id="totalLengthFt" type="number" min="0.1" max="2000" step="0.1" value="100" inputmode="decimal" />
+      <fieldset class="scenes">
+        <legend>Start from a scene</legend>
+        <div id="sceneRow" class="scene-row" role="group" aria-label="Scene templates"></div>
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Run</legend>
+        <div class="grid">
+          <div>
+            <label for="totalLengthFt">Total fence run length (ft)</label>
+            <input id="totalLengthFt" type="number" min="0.1" max="2000" step="0.1" value="100" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="wastePct">Waste (%)</label>
+            <input id="wastePct" type="number" min="0" max="40" step="1" value="10" inputmode="numeric" aria-describedby="wasteHint" />
+            <p class="hint" id="wasteHint">Added on top of the panels the layout needs, then rounded up to a whole panel. Posts stay on the layout count.</p>
+          </div>
         </div>
-        <div>
-          <label for="panelWidthFt">Panel width (ft)</label>
-          <select id="panelWidthFt">
-            <option value="6">6 ft (common vinyl)</option>
-            <option value="8" selected>8 ft (common wood)</option>
-            <option value="4">4 ft</option>
-          </select>
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Panels</legend>
+        <div class="grid">
+          <div>
+            <label for="panelPreset">Panel preset</label>
+            <select id="panelPreset">
+              <option value="wood-8x6" selected>Wood privacy, 8 ft wide × 6 ft tall</option>
+              <option value="wood-6x6">Wood privacy, 6 ft wide × 6 ft tall</option>
+              <option value="vinyl-6x6">Vinyl privacy, 6 ft wide × 6 ft tall</option>
+              <option value="vinyl-8x6">Vinyl privacy, 8 ft wide × 6 ft tall</option>
+              <option value="picket-4x4">Wood picket section, 4 ft wide × 4 ft tall</option>
+              <option value="custom">Custom width</option>
+            </select>
+          </div>
+          <div>
+            <label for="panelWidthFt">Panel width (ft)</label>
+            <input id="panelWidthFt" type="number" min="4" max="12" step="0.5" value="8" inputmode="decimal" aria-describedby="widthHint" />
+            <p class="hint" id="widthHint">Common prefab widths are 6 and 8 ft. Override this if your panel is different.</p>
+          </div>
+          <div>
+            <label for="panelHeightFt">Panel height (ft)</label>
+            <input id="panelHeightFt" type="number" min="1" max="12" step="0.5" value="6" inputmode="decimal" aria-describedby="heightHint" />
+            <p class="hint" id="heightHint">For the shopping list only. The count uses width.</p>
+          </div>
         </div>
-        <div>
-          <label for="gateCount">Number of gates</label>
-          <input id="gateCount" type="number" min="0" max="20" step="1" value="1" inputmode="numeric" />
+      </fieldset>
+
+      <fieldset class="block">
+        <legend>Gates and posts</legend>
+        <div class="grid">
+          <div>
+            <label for="gateCount">Number of gates</label>
+            <input id="gateCount" type="number" min="0" max="20" step="1" value="1" inputmode="numeric" />
+          </div>
+          <div>
+            <label for="gateWidthFt">Width per gate (ft)</label>
+            <input id="gateWidthFt" type="number" min="0.1" max="20" step="0.1" value="4" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="extraPosts">Extra posts</label>
+            <input id="extraPosts" type="number" min="0" max="100" step="1" value="0" inputmode="numeric" aria-describedby="extraHint" />
+            <p class="hint" id="extraHint">A straight run already has a post at each end. Add one only for a corner you are counting on this list and not on another run.</p>
+          </div>
+          <div class="row-check">
+            <input id="includeCaps" type="checkbox" checked />
+            <label for="includeCaps">Include post caps</label>
+          </div>
         </div>
-        <div>
-          <label for="gateWidthFt">Width per gate (ft)</label>
-          <input id="gateWidthFt" type="number" min="0.1" max="20" step="0.1" value="4" inputmode="decimal" />
-        </div>
-        <div>
-          <label for="extraPosts">Extra posts (corners / custom)</label>
-          <input id="extraPosts" type="number" min="0" max="100" step="1" value="0" inputmode="numeric" />
-        </div>
-        <div class="row-check">
-          <input id="includeCaps" type="checkbox" checked />
-          <label for="includeCaps" style="margin:0;font-weight:500">Include post caps</label>
-        </div>
-      </div>
+      </fieldset>
+
       <p class="error" id="error" role="alert" aria-live="polite"></p>
-      <div class="results" id="results" aria-live="polite">
-        <div class="stat"><div class="n" id="outPanels">—</div><div class="l">Panels</div></div>
-        <div class="stat"><div class="n" id="outPosts">—</div><div class="l">Posts</div></div>
-        <div class="stat"><div class="n" id="outCaps">—</div><div class="l">Caps</div></div>
-      </div>
-      <p class="note" id="detail"></p>
       <div class="actions">
         <button type="button" class="btn" id="btnPrint" disabled>Print shopping list</button>
         <button type="button" class="btn btn-secondary" id="btnCopy" disabled>Copy list</button>
@@ -143,42 +178,48 @@
       <p class="note" id="copyStatus" aria-live="polite"></p>
     </div>
 
+    <div class="card" id="resultCard">
+      <h2 class="result-title">The count</h2>
+      <div class="results" aria-live="polite">
+        <div class="stat"><div class="n" id="outPanels">—</div><div class="l">Panels to buy</div></div>
+        <div class="stat"><div class="n" id="outPosts">—</div><div class="l">Posts</div></div>
+        <div class="stat"><div class="n" id="outCaps">—</div><div class="l">Caps</div></div>
+      </div>
+      <p class="callout" id="callout"></p>
+      <h3 class="why-title" id="whyTitle">Why these numbers</h3>
+      <div id="why" aria-labelledby="whyTitle"></div>
+      <details class="how" id="howCalc">
+        <summary>How this was calculated</summary>
+        <div class="how-run" id="howRun">
+          <p>Net length is the run minus the gates. Panels are that length divided by the panel width, rounded up, because a short last bay still needs a whole panel you can trim. A waste percent is applied to that count and rounded up again. Posts are the bays plus one end, plus two per gate, plus any extras you type. Example: 100 ft with one 4 ft gate and 8 ft panels is 12 panels for the layout and 15 posts. At 10% waste the list rounds the panels up to 14. This is a shopping count, not a code or structural check.</p>
+        </div>
+      </details>
+    </div>
+
     <div class="card print-block" id="shoppingCard">
       <h2 class="print-only">HomeFixMath — Fence shopping list</h2>
       <h2 class="no-print">Shopping list</h2>
       <p class="note" id="shopMeta">Enter valid measurements above to build your list.</p>
-      <ul class="shop-list" id="shopList">
-        <li>Fence panels (match width &amp; height)</li>
-        <li>Fence posts</li>
-        <li>Post caps</li>
-        <li>Post-hole concrete mix / gravel (as needed)</li>
-        <li>Gate kit &amp; hardware (if gates &gt; 0)</li>
-      </ul>
-      <p class="note">Retailer buy links will appear here after affiliate networks are approved (Impact / CJ / Awin). See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+      <div id="shopGroups">
+        <noscript><p>Turn on JavaScript to build the shopping list. The math stays in your browser.</p></noscript>
+      </div>
+      <div class="shop-later">
+        <h3>Shop later</h3>
+        <p>Buy links are not connected yet. Copy or print this list and match it in the aisle. Each line marked Link pending is a placeholder, not a store link.</p>
+        <div id="shopPending"></div>
+      </div>
+      <p class="note">When a retailer program is approved, a real link can replace a Link pending slot. See <a href="../affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
       <p class="disclaimer">Estimates only. Measure your property line carefully; call 811 before digging; follow manufacturer instructions and local code.</p>
     </div>
 
     <div class="no-print">
-      <h2>How we calculate</h2>
-      <div class="card note">
-        <ol>
-          <li>Net panel length = total run − (gates × gate width).</li>
-          <li>Panels = ceil(net ÷ panel width). Always round up.</li>
-          <li>Posts = panels + 1, plus 2 posts per gate, plus any extras you enter.</li>
-          <li>Caps = total posts when enabled.</li>
-        </ol>
-        <p><strong>Example:</strong> 100 ft, one 4-ft gate, 8-ft panels → net 96 ft → <strong>12 panels</strong>, <strong>15 posts</strong>, 15 caps.</p>
-        <p>Does not size post diameter, hole depth, concrete volume, or permits. Prefab panel sections only (not board-by-board picket math).</p>
-      </div>
-
       <h2>FAQ</h2>
       <div class="card">
-        <p><strong>How many posts for 100 feet?</strong> With 8-ft panels and one 4-ft gate: 15 posts (see example above).</p>
+        <p><strong>How many posts for 100 feet?</strong> With 8 ft panels and one 4 ft gate, the layout is 12 panels and 15 posts. A 10% waste buffer rounds the panel order up to 14. Posts stay at 15, because spare panels are not extra bays.</p>
         <p><strong>6-ft vs 8-ft panels?</strong> Wider panels mean fewer posts and faster install, but each panel is heavier.</p>
         <p><strong>Do I need concrete?</strong> Often yes for wood/vinyl posts — follow the post and local frost-line guidance; this tool does not estimate bags yet.</p>
-        <p><strong>Why round up panels?</strong> A partial bay still needs a full panel to cut down. Order extras if your line is uneven.</p>
+        <p><strong>Why round up panels?</strong> A short last bay still needs a full panel you can trim. Waste is applied after that layout count, then rounded up to a whole panel so the order is not short.</p>
       </div>
-
       <p class="disclaimer">Estimates only. Measure your property line carefully; call 811 before digging; follow manufacturer instructions and local code.</p>
     </div>
   </main>
@@ -190,27 +231,54 @@
       <a href="../about.html">About</a>
     </div>
   </footer>
+  <script src="../js/calcs.js"></script>
+  <script src="../js/ui.js"></script>
   <script>
     (function () {
-      const $ = (id) => document.getElementById(id);
-      const ids = ["totalLengthFt","panelWidthFt","gateCount","gateWidthFt","extraPosts","includeCaps"];
-      const MAX_LENGTH = 2000;
-      const MAX_GATES = 20;
-      const MAX_EXTRA = 100;
-      const MAX_GATE_W = 20;
+      var C = window.HFMCalcs;
+      var U = window.HFMUI;
+      var $ = function (id) { return document.getElementById(id); };
+      var applying = false;
+      var lastText = "";
 
-      function num(id) { return parseFloat($(id).value); }
-      function int(id) {
-        const v = $(id).value;
-        if (v === "" || v === null) return NaN;
-        return parseInt(v, 10);
+      var sceneUi = U.setupScenes($("sceneRow"), C.fenceScenes, applyScene);
+
+      function preset() {
+        return C.byId(C.fencePresets, $("panelPreset").value) || C.byId(C.fencePresets, "custom");
       }
 
-      function setOut(p, po, c, detail) {
-        $("outPanels").textContent = p;
-        $("outPosts").textContent = po;
-        $("outCaps").textContent = c;
-        $("detail").textContent = detail || "";
+      function fillPreset(id) {
+        var item = C.byId(C.fencePresets, id);
+        if (!item || item.widthFt == null) return;
+        $("panelWidthFt").value = item.widthFt;
+        $("panelHeightFt").value = item.heightFt;
+      }
+
+      function applyScene(scene) {
+        applying = true;
+        $("totalLengthFt").value = scene.totalLengthFt;
+        $("panelPreset").value = scene.presetId;
+        fillPreset(scene.presetId);
+        $("gateCount").value = scene.gateCount;
+        $("gateWidthFt").value = scene.gateWidthFt;
+        $("extraPosts").value = scene.extraPosts;
+        $("includeCaps").checked = !!scene.includeCaps;
+        $("wastePct").value = scene.wastePct;
+        applying = false;
+        sceneUi.press(scene.id);
+        calc();
+      }
+
+      function readNum(id) {
+        var raw = $(id).value.trim();
+        if (raw === "") return NaN;
+        return Number(raw);
+      }
+
+      function readInt(id) {
+        var raw = $(id).value.trim();
+        if (!/^\d+$/.test(raw)) return NaN;
+        return Number(raw);
       }
 
       function setButtons(on) {
@@ -218,159 +286,90 @@
         $("btnCopy").disabled = !on;
       }
 
-      function buildListText(panels, posts, caps, gates, panelW, total, net) {
-        const lines = [
-          "HomeFixMath — Fence shopping list",
-          "Inputs: " + total + " ft run, " + panelW + "-ft panels, " + gates + " gate(s), net " + net.toFixed(1) + " ft",
-          "",
-          panels + " × fence panel(s) @ " + panelW + " ft wide (match height / style)",
-          posts + " × fence post(s)",
-        ];
-        if (caps > 0) lines.push(caps + " × post cap(s)");
-        else lines.push("Post caps: skipped");
-        lines.push("Post-hole concrete mix / gravel (as needed for post count)");
-        if (gates > 0) lines.push(gates + " × gate kit & hardware (width ~" + num("gateWidthFt") + " ft each)");
-        lines.push("Fasteners / brackets per manufacturer");
-        lines.push("");
-        lines.push("Estimates only — confirm on site. Call 811 before digging.");
-        return lines.join("\n");
+      function showEmpty() {
+        $("outPanels").textContent = "—";
+        $("outPosts").textContent = "—";
+        $("outCaps").textContent = "—";
+        $("callout").textContent = "";
+        U.clear($("why"));
+        U.renderHow($("howRun"), ["Fix the measurements above to see this run."]);
+        $("shopMeta").textContent = "Enter valid measurements above to build your list.";
+        U.clear($("shopGroups"));
+        U.clear($("shopPending"));
+        lastText = "";
       }
-
-      function renderShop(ok, panels, posts, caps, gates, panelW, total, net) {
-        const meta = $("shopMeta");
-        const list = $("shopList");
-        if (!ok) {
-          meta.textContent = "Enter valid measurements above to build your list.";
-          list.innerHTML = [
-            "<li>Fence panels (match width &amp; height)</li>",
-            "<li>Fence posts</li>",
-            "<li>Post caps</li>",
-            "<li>Post-hole concrete mix / gravel (as needed)</li>",
-            "<li>Gate kit &amp; hardware (if gates &gt; 0)</li>"
-          ].join("");
-          return "";
-        }
-        meta.textContent = "Based on " + total + " ft run · " + panelW + "-ft panels · net " + net.toFixed(1) + " ft · " + gates + " gate(s).";
-        const items = [
-          panels + " × fence panel(s) @ " + panelW + " ft wide (match height / style)",
-          posts + " × fence post(s)",
-          caps > 0 ? (caps + " × post cap(s)") : "Post caps: not included",
-          "Post-hole concrete mix / gravel (as needed for " + posts + " posts)",
-        ];
-        if (gates > 0) {
-          items.push(gates + " × gate kit &amp; hardware (~" + num("gateWidthFt") + " ft each)");
-        }
-        items.push("Fasteners / brackets per manufacturer");
-        list.innerHTML = items.map((t) => "<li>" + t + "</li>").join("");
-        return buildListText(panels, posts, caps, gates, panelW, total, net);
-      }
-
-      let lastListText = "";
 
       function calc() {
-        const err = $("error");
-        err.textContent = "";
+        $("error").textContent = "";
         $("copyStatus").textContent = "";
-        const total = num("totalLengthFt");
-        const panelW = num("panelWidthFt");
-        const gates = int("gateCount");
-        const gateW = num("gateWidthFt");
-        const extra = int("extraPosts");
-        const capsOn = $("includeCaps").checked;
-
-        function fail(msg) {
-          err.textContent = msg;
-          setOut("—","—","—","");
+        var result = C.fence({
+          totalLengthFt: readNum("totalLengthFt"),
+          panelWidthFt: readNum("panelWidthFt"),
+          panelHeightFt: readNum("panelHeightFt"),
+          gateCount: readInt("gateCount"),
+          gateWidthFt: readNum("gateWidthFt"),
+          extraPosts: readInt("extraPosts"),
+          includeCaps: $("includeCaps").checked,
+          wastePct: readNum("wastePct"),
+          materialName: preset().material
+        });
+        if (!result.ok) {
+          $("error").textContent = result.error;
           setButtons(false);
-          lastListText = "";
-          renderShop(false);
-        }
-
-        if (!Number.isFinite(total) || total <= 0) {
-          fail("Enter a fence length greater than 0 ft.");
+          showEmpty();
           return;
         }
-        if (total > MAX_LENGTH) {
-          fail("Fence length must be " + MAX_LENGTH + " ft or less for this tool.");
-          return;
-        }
-        if (!Number.isFinite(panelW) || panelW <= 0) {
-          fail("Choose a valid panel width.");
-          return;
-        }
-        if (!Number.isFinite(gates) || gates < 0 || Math.floor(gates) !== gates) {
-          fail("Gate count must be a whole number ≥ 0.");
-          return;
-        }
-        if (gates > MAX_GATES) {
-          fail("Gate count must be " + MAX_GATES + " or fewer.");
-          return;
-        }
-        if (!Number.isFinite(extra) || extra < 0 || Math.floor(extra) !== extra) {
-          fail("Extra posts must be a whole number ≥ 0.");
-          return;
-        }
-        if (extra > MAX_EXTRA) {
-          fail("Extra posts must be " + MAX_EXTRA + " or fewer.");
-          return;
-        }
-        if (gates > 0) {
-          if (!Number.isFinite(gateW) || gateW <= 0) {
-            fail("Enter a positive gate width when you have gates.");
-            return;
-          }
-          if (gateW > MAX_GATE_W) {
-            fail("Gate width must be " + MAX_GATE_W + " ft or less.");
-            return;
-          }
-        }
-        const gateTotal = gates * (gates > 0 ? gateW : 0);
-        if (gateTotal > total) {
-          fail("Gate width × count exceeds total fence length.");
-          return;
-        }
-
-        const net = Math.max(0, total - gateTotal);
-        const panels = net > 0 ? Math.ceil(net / panelW) : 0;
-        let posts;
-        if (panels > 0) {
-          posts = panels + 1 + (2 * gates) + extra;
-        } else {
-          posts = (2 * gates) + extra;
-        }
-        const caps = capsOn ? posts : 0;
-        let detail = "Net panel length: " + net.toFixed(1) + " ft. ";
-        if (panels === 0 && gates > 0) detail += "No panel run left after gates — posts are gate posts only. ";
-        if (net > 0 && (net % panelW) > 0.001) detail += "Last bay may need a trimmed panel.";
-
-        setOut(String(panels), String(posts), String(caps), detail.trim());
+        $("outPanels").textContent = String(result.buyPanels);
+        $("outPosts").textContent = String(result.posts);
+        $("outCaps").textContent = String(result.caps);
+        $("callout").textContent = result.callout;
+        U.renderWhy($("why"), result.why);
+        U.renderHow($("howRun"), result.how);
+        $("shopMeta").textContent = result.meta;
+        U.renderGroups($("shopGroups"), result.groups);
+        U.renderPending($("shopPending"), result.groups.map(function (group) { return group.name; }));
         setButtons(true);
-        lastListText = renderShop(true, panels, posts, caps, gates, panelW, total, net);
+        lastText = U.toPlainText(
+          "HomeFixMath — Fence shopping list",
+          [result.meta],
+          result.groups,
+          result.why,
+          result.copyNotes
+        );
       }
 
-      $("btnPrint").addEventListener("click", function () {
-        if ($("btnPrint").disabled) return;
-        window.print();
-      });
-      $("btnCopy").addEventListener("click", function () {
-        if (!lastListText) return;
-        const status = $("copyStatus");
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(lastListText).then(function () {
-            status.textContent = "Shopping list copied.";
-          }).catch(function () {
-            status.textContent = "Could not copy — select the list and copy manually.";
-          });
-        } else {
-          status.textContent = "Clipboard unavailable — select the list and copy manually.";
-        }
+      $("panelPreset").addEventListener("change", function () {
+        if (applying) return;
+        fillPreset($("panelPreset").value);
+        sceneUi.clear();
+        calc();
       });
 
-      ids.forEach((id) => {
-        $(id).addEventListener("input", calc);
-        $(id).addEventListener("change", calc);
+      ["panelWidthFt", "panelHeightFt"].forEach(function (id) {
+        $(id).addEventListener("input", function () {
+          if (applying) return;
+          $("panelPreset").value = "custom";
+          sceneUi.clear();
+          calc();
+        });
       });
-      calc();
+
+      ["totalLengthFt", "gateCount", "gateWidthFt", "extraPosts", "wastePct"].forEach(function (id) {
+        $(id).addEventListener("input", function () {
+          if (applying) return;
+          sceneUi.clear();
+          calc();
+        });
+      });
+      $("includeCaps").addEventListener("change", function () {
+        if (applying) return;
+        sceneUi.clear();
+        calc();
+      });
+
+      U.bindPrint($("btnPrint"), $("howCalc"));
+      U.bindCopy($("btnCopy"), $("copyStatus"), function () { return lastText; });
+      applyScene(C.byId(C.fenceScenes, "backyard"));
     })();
   </script>
 </body>

@@ -50,10 +50,8 @@ Open locally: `site/index.html` in a browser (no build step).
 ## Site status
 
 - US English copy; FTC affiliate disclosure names **networks generically** (Impact / CJ / Awin / Gumroad) — not Amazon-only  
-- Fence calculator: validation, live results, **Print** / **Copy** shopping list
-- Paint calculator: walls + optional ceiling, coats/waste/coverage, **Print** / **Copy** shopping list
-- Deck board calculator: rows, stock counts, gap/waste, **Print** / **Copy** shopping list
-- Affiliate buy buttons: placeholders until a network is approved  
+- Fence, paint, and deck calculators: material presets, one-click scenes, visible waste / rounding / openings, grouped **Print** / **Copy** shopping list, and a short “How this was calculated” note
+- Affiliate buy buttons: “Link pending” placeholders until a network is approved — no affiliate URLs yet  
 
 ---
 

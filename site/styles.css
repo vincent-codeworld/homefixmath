@@ -204,7 +204,7 @@ footer .wrap {
     break-inside: avoid;
   }
   a { color: #000; text-decoration: none; }
-  .callout, .why-list li, .shop-group, .shop-later { break-inside: avoid; }
+  .callout, .why-list li, .shop-group, .shop-later, .shop-gear { break-inside: avoid; }
   .how { border-top-color: #ccc; }
   .pending-tag { border-color: #999; color: #333; }
 }
@@ -304,6 +304,32 @@ fieldset.block legend {
   background: var(--bg);
 }
 .shop-later p { margin: 0.2rem 0 0.4rem; }
+.shop-gear {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--border);
+}
+.shop-gear h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+.shop-gear p { margin: 0.2rem 0 0.4rem; }
+.shop-gear .gear-label {
+  margin: 0;
+  font-weight: 600;
+}
+.shop-gear .gear-banner {
+  display: block;
+  margin: 0.55rem 0 0.45rem;
+  max-width: 100%;
+}
+.shop-gear .gear-banner img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
 .pending-links { list-style: none; margin: 0; padding: 0; }
 .pending-links li {
   display: flex;
